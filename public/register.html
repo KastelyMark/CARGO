@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regisztráció - Car Rent</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body class="register-page">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.png" alt="" width="60px" height="60px" style="border-radius: 60px;">CARGO
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Főoldal</a>
+                <a href="/login" class="nav-link">Bejelentkezés</a>
+                <a href="/register" class="nav-link active">Regisztráció</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="register-main">
+        <div class="register-container">
+            <!-- Header -->
+            <div class="register-header">
+                <div class="logo-section">
+                        <img src="logo.png" alt="" width="60px" height="60px" style="border-radius: 60px;">
+                    <div class="header-text">
+                        <h1>Regisztráció</h1>
+                        <p>Hozd létre fiókodat és kezdd el a bérlést</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Adatok</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Verifikáció</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Kész</div>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <form class="register-form" id="registerForm">
+                <!-- Personal Information -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-user"></i>
+                        Személyes adatok
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="firstName">Keresztnév *</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Vezetéknév *</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="email">Email cím *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Telefonszám *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="birthDate">Születési dátum *</label>
+                            <input type="date" id="birthDate" name="birthDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Information -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-lock"></i>
+                        Biztonsági adatok
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="password">Jelszó *</label>
+                            <div class="password-input">
+                                <input type="password" id="password" name="password" required>
+                                <button type="button" class="password-toggle">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength">
+                                <div class="strength-bar">
+                                    <div class="strength-fill"></div>
+                                </div>
+                                <span class="strength-text">Jelszó erősség</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Jelszó megerősítése *</label>
+                            <div class="password-input">
+                                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                                <button type="button" class="password-toggle">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Information -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Cím adatok
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="address">Utca, házszám *</label>
+                            <input type="text" id="address" name="address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">Város *</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="zipCode">Irányítószám *</label>
+                            <input type="text" id="zipCode" name="zipCode" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Ország *</label>
+                            <select id="country" name="country" required>
+                                <option value="">Válassz országot</option>
+                                <option value="HU">Magyarország</option>
+                                <option value="AT">Ausztria</option>
+                                <option value="SK">Szlovákia</option>
+                                <option value="RO">Románia</option>
+                                <option value="HR">Horvátország</option>
+                                <option value="SI">Szlovénia</option>
+                                <option value="DE">Németország</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="form-section">
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <span class="checkmark"></span>
+                            <span class="checkbox-text">
+                                Elfogadom a <a href="#" class="terms-link">felhasználási feltételeket</a> és az <a href="#" class="terms-link">adatvédelmi szabályzatot</a> *
+                            </span>
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="newsletter" name="newsletter">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-text">
+                                Szeretnék hírlevelet kapni a legújabb ajánlatokról
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-actions">
+                    <button type="submit" class="register-btn">
+                        <span class="btn-text">Regisztráció</span>
+                        <i class="fas fa-arrow-right btn-icon"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Login Link -->
+            <div class="login-link">
+                <p>Már van fiókod? <a href="/login" class="login-link-text">Jelentkezz be itt</a></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Sikeres regisztráció!</h3>
+            <p>A regisztráció sikeresen megtörtént. Kérjük, ellenőrizd az email fiókodat a verifikációs kódért.</p>
+            <div class="countdown-timer">
+                <span id="countdown">5</span> másodperc múlva továbbirányítunk a verifikációs oldalra
+            </div>
+            <button class="btn btn-primary" onclick="closeModal()">Tovább a verifikációhoz</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

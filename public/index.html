@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CARGO - Autóbérlés</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="../logo.png" type="image/png">
+    <!-- Leaflet map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" style="background-color: black;">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.png" alt="" width="60px" height="60px" style="border-radius: 60px;">CARGO
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">Főoldal</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/cars" class="nav-link">Autók</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">Rólunk</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">Kapcsolat</a>
+                </li>
+                <li class="nav-item">
+                    <a href="login" class="nav-link" id="loginLink">Bejelentkezés</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/register" class="nav-link nav-register-btn" id="registerLink">Regisztráció</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Találd meg a tökéletes autót</h1>
+            <p class="hero-subtitle">Prémium minőségű járművek megfizethető áron</p>
+            <div class="hero-buttons">
+                <a href="/cars" class="btn btn-primary">Autók böngészése</a>
+                <a href="/register" class="btn btn-secondary">Regisztrálj most</a>
+            </div>
+        </div>
+        <div class="hero-animation">
+            <div class="floating-car">
+                <i class="fas fa-car"></i>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text" data-aos="fade-right">
+                    <h2>Miért válassz minket?</h2>
+                    <p>Mert nálunk az autóbérlés gyors, egyszerű és biztonságos. Rugalmas feltételek, átlátható árak és mindig tiszta, karbantartott járművek várnak rád – hogy te csak az utadra koncentrálhass. Mert nálunk az autóbérlés gyors, egyszerű és biztonságos. Rugalmas feltételek, átlátható árak és mindig tiszta, karbantartott járművek várnak rád – hogy te csak az utadra koncentrálhass. Mert nálunk a kényelem, a minőség és a megbízhatóság alap. Válaszd a stílust és a kényelmet – prémium autóinkkal minden utad különleges élmény lesz.</p>
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Biztonság</h3>
+                            <p>Minden járművünk teljes biztosítással rendelkezik</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-clock"></i>
+                            <h3>24/7 Támogatás</h3>
+                            <p>Bármikor számíthatsz ránk segítségre</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-star"></i>
+                            <h3>Prémium Minőség</h3>
+                            <p>Csak a legjobb állapotú járműveket kínáljuk</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image" data-aos="fade-left">
+                    <!-- Replaced logo image with an interactive map -->
+                    <div id="aboutMap" class="about-map" aria-label="Cég helye" title="Cég helye a térképen"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2 class="section-title">Kapcsolat</h2>
+            <div class="contact-content">
+                <div class="contact-info" data-aos="fade-right">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h3>Cím</h3>
+                            <p>1234 Budapest, Autó utca 1.</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h3>Telefon</h3>
+                            <p>+36 1 234 5678</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h3>Email</h3>
+                            <p>info@cargo.hu</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm" data-aos="fade-left">
+                    <div class="form-group">
+                        <input type="text" name="name" placeholder="Név" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="message" placeholder="Üzenet" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Üzenet küldése</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><img src="logo.png" alt="" width="20px" height="20px" style="border-radius: 20px;"> <span>CARGO</span></h3>
+                    <p>Prémium autóbérlési szolgáltatások</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Gyors linkek</h3>
+                    <ul>
+                        <li><a href="#home">Főoldal</a></li>
+                        <li><a href="/cars">Autók</a></li>
+                        <li><a href="#about">Rólunk</a></li>
+                        <li><a href="#contact">Kapcsolat</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Követés</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 CarGO. Minden jog fenntartva.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

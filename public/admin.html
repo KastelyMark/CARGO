@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - CarGO</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="../logo.png" type="image/png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Admin Bejelentkezés</h2>
+            </div>
+            <div class="modal-body">
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="adminPassword">Admin Jelszó</label>
+                        <input type="password" id="adminPassword" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Bejelentkezés</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-panel" style="display: none;">
+        <!-- Overlay for mobile navbar / panels -->
+        <div id="adminOverlay" class="admin-overlay" style="display:none;"></div>
+
+        <!-- Main Content -->
+        <div class="admin-content">
+            <!-- Mobile topbar with hamburger -->
+            <div class="admin-topbar" style="display:none;">
+                <button id="adminHamburger" class="admin-hamburger" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+                <h2 class="admin-top-title">Admin</h2>
+            </div>
+            <div class="container">
+                <!-- Desktop horizontal admin navbar -->
+                <nav class="admin-navbar" aria-label="Admin navigation">
+                    <ul class="admin-navbar-list">
+                        <li><a href="#" class="admin-nav-link" data-section="dashboardSection">Irányítópult</a></li>
+                        <li><a href="#" class="admin-nav-link" data-section="messagesSection">Üzenetek</a></li>
+                        <li><a href="#" class="admin-nav-link" data-section="usersSection">Felhasználók</a></li>
+                        <li><a href="#" class="admin-nav-link" data-section="rentalsSection">Bérlések</a></li>
+                        <li><a href="#" class="admin-nav-link" data-section="carsSection">Autók</a></li>
+                    </ul>
+                </nav>
+
+                <!-- Statistics -->
+                <div id="dashboardSection" class="admin-section admin-dashboard" style="display:none;">
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-users"></i>
+                        <h3 id="totalUsers">0</h3>
+                        <p>Regisztrált felhasználók</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-envelope"></i>
+                        <h3 id="totalMessages">0</h3>
+                        <p>Összes üzenet</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-envelope-open"></i>
+                        <h3 id="newMessages">0</h3>
+                        <p>Új üzenetek</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-car-side"></i>
+                        <h3 id="totalRentals">0</h3>
+                        <p>Összes bérlés</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <h3 id="pendingRentals">0</h3>
+                        <p>Függő bérlések</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-car"></i>
+                        <h3 id="totalCars">0</h3>
+                        <p>Autók</p>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Recent Messages -->
+                <div id="messagesSection" class="admin-section" style="display:none;">
+                    <h2>Legutóbbi üzenetek</h2>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Név</th>
+                                    <th>Email</th>
+                                    <th>Üzenet</th>
+                                    <th>Dátum</th>
+                                    <th>Státusz</th>
+                                    <th>Műveletek</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messagesTable">
+                                <tr>
+                                    <td colspan="6" class="text-center">Üzenetek betöltése...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Users -->
+                <div id="usersSection" class="admin-section" style="display:none;">
+                    <h2>Felhasználók</h2>
+                    <div class="admin-filters" style="margin-bottom:12px;">
+                        <button class="btn btn-sm admin-user-filter active" data-status="registered">Regisztráltak</button>
+                        <button class="btn btn-sm admin-user-filter" data-status="unverified">Nincs hitelesítve</button>
+                        <button class="btn btn-sm admin-user-filter" data-status="all">Összes</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Név</th>
+                                    <th>Email</th>
+                                    <th>Telefon</th>
+                                    <th>Regisztráció</th>
+                                    <th>Hitelesítve</th>
+                                    <th>Műveletek</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <tr>
+                                    <td colspan="6" class="text-center">Felhasználók betöltése...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Edit User Modal -->
+                <div id="editUserModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Felhasználó szerkesztése</h2>
+                            <span class="close">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editUserForm">
+                                <input type="hidden" id="editUserId" name="id">
+                                <div class="form-group">
+                                    <label for="editName">Név</label>
+                                    <input type="text" id="editName" name="name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editEmail">Email</label>
+                                    <input type="email" id="editEmail" name="email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editPhone">Telefon</label>
+                                    <input type="text" id="editPhone" name="phone">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editVerified">Hitelesítve</label>
+                                    <select id="editVerified" name="is_verified">
+                                        <option value="0">Nem</option>
+                                        <option value="1">Igen</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editPassword">Új jelszó (hagyja üresen, ha nem szeretné megváltoztatni)</label>
+                                    <input type="password" id="editPassword" name="password" placeholder="Új jelszó">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Mentés</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Rentals -->
+                <div id="rentalsSection" class="admin-section" style="display:none;">
+                    <h2>Legutóbbi bérlések</h2>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Autó</th>
+                                    <th>Ár</th>
+                                    <th>Bérlés kezdete</th>
+                                    <th>Visszahozatal</th>
+                                    <th>Ügyfél</th>
+                                    <th>Email</th>
+                                    <th>Státusz</th>
+                                    <th>Műveletek</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rentalsTable">
+                                <tr>
+                                    <td colspan="8" class="text-center">Bérlések betöltése...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                    <!-- Car Management -->
+                    <div id="carsSection" class="admin-section" style="display:none;">
+                        <h2>Autók kezelése</h2>
+
+                        <div class="card">
+                            <h3>Új autó feltöltése</h3>
+                            <form id="carUploadForm" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="carName">Autó neve</label>
+                                    <input type="text" id="carName" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="carDescription">Leírás</label>
+                                    <textarea id="carDescription" name="description"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="carPrice">Ár (Ft/nap)</label>
+                                    <input type="number" id="carPrice" name="price_per_day" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="carImage">Kép</label>
+                                    <input type="file" id="carImage" name="image" accept="image/*">
+                                </div>
+                                <div class="form-group">
+                                    <label for="carSeats">Ülések</label>
+                                    <input type="number" id="carSeats" name="seats" value="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="carCategory">Kategória</label>
+                                    <select id="carCategory" name="category">
+                                        <option value="Gazdaságos">Gazdaságos</option>
+                                        <option value="kompakt">Kompakt</option>
+                                        <option value="Középkategória">Középkategória</option>
+                                        <option value="luxus">Luxus</option>
+                                        <option value="suv">SUV</option>
+                                        <option value="sports">Sports</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="carTransmission">Váltó</label>
+                                    <select id="carTransmission" name="transmission">
+                                        <option value="automatic">Automata</option>
+                                        <option value="manual">Manuális</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="carFuel">Üzemanyag</label>
+                                    <select id="carFuel" name="fuel_type">
+                                        <option value="Benzin">Benzin</option>
+                                        <option value="Diesel">Diesel</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                        <option value="Electric">Electric</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Feltöltés</button>
+                            </form>
+                        </div>
+
+                        <div class="table-container">
+                            <h3>Autók</h3>
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Kép</th>
+                                        <th>Név</th>
+                                        <th>Ár</th>
+                                        <th>Kategória</th>
+                                        <th>Műveletek</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminCarsTable">
+                                    <tr><td colspan="6" class="text-center">Autók betöltése...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Car Modal -->
+    <div id="editCarModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Autó szerkesztése</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editCarForm" enctype="multipart/form-data" onsubmit="handleEditCarSubmit(event)">
+                    <input type="hidden" id="editCarId" name="id">
+                    <div class="form-group">
+                        <label for="editCarName">Név</label>
+                        <input type="text" id="editCarName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCarDescription">Leírás</label>
+                        <textarea id="editCarDescription" name="description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCarPrice">Ár (Ft/nap)</label>
+                        <input type="number" id="editCarPrice" name="price_per_day" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCarCategory">Kategória</label>
+                        <select id="editCarCategory" name="category">
+                            <option value="Gazdaságos">Gazdaságos</option>
+                            <option value="kompakt">Kompakt</option>
+                            <option value="Középkategória">Középkategória</option>
+                            <option value="luxus">Luxus</option>
+                            <option value="suv">SUV</option>
+                            <option value="sports">Sports</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCarTransmission">Váltó</label>
+                        <select id="editCarTransmission" name="transmission">
+                            <option value="automatic">Automata</option>
+                            <option value="manual">Manuális</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCarFuel">Üzemanyag</label>
+                        <select id="editCarFuel" name="fuel_type">
+                            <option value="Benzin">Benzin</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="Hybrid">Hybrid</option>
+                            <option value="Electric">Electric</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCarSeats">Ülések</label>
+                        <input type="number" id="editCarSeats" name="seats" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="editCarImage">Új kép (opcionális)</label>
+                        <input type="file" id="editCarImage" name="image" accept="image/*">
+                        <div style="margin-top:8px;">
+                            <img id="editCarImagePreview" alt="" style="max-width:160px; height:auto; border-radius:8px;">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Mentés</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Modal -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Email küldése</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="emailForm" class="email-form">
+                    <div class="form-group">
+                        <label for="toEmail">Címzett email</label>
+                        <input type="email" id="toEmail" name="toEmail" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="toName">Címzett név</label>
+                        <input type="text" id="toName" name="toName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Tárgy</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Üzenet</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Email küldése</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

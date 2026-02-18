@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bejelentkezés - Car Rent</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../logo.png" type="image/png">
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <img src="logo.png" alt="" width="60px" height="60px" style="border-radius: 60px;">
+                <h1>CARGO</h1>
+                <h2>Bejelentkezs</h2>
+                <p>Jelentkzz be a fikodba</p>
+            </div>
+
+            <form class="auth-form" id="loginForm">
+                <div class="form-group">
+                    <label for="email">Emil cím</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Jelszó</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Bejelentkezés</button>
+                <div style="margin-top:10px; text-align:center;">
+                    <button type="button" id="forgotPasswordBtn" class="btn btn-link">Elfelejtetted a jelszavad?</button>
+                </div>
+            </form>
+
+            <div class="auth-footer">
+                <p>Nincs fiókod? <a href="/register">Regisztrálj itt</a></p>
+                <p><a href="/">← Vissza a főoldalra</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
+<!-- Forgot password modal -->
+<div id="forgotPasswordModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h2>Elfelejtetted a jelszavad?</h2><span class="close">&times;</span></div>
+        <div class="modal-body">
+            <form id="forgotPasswordForm">
+                <div class="form-group">
+                    <label for="fpEmail">Email cím</label>
+                    <input type="email" id="fpEmail" name="email" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Küldés</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Change password modal (used after login with temp password or via modal flow) -->
+<div id="changePasswordModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h2>Új jelszó megadása</h2><span class="close">&times;</span></div>
+        <div class="modal-body">
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label for="cpEmail">Email</label>
+                    <input type="email" id="cpEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="cpTemp">Ideiglenes jelszó</label>
+                    <input type="password" id="cpTemp" name="temp_password">
+                </div>
+                <div class="form-group">
+                    <label for="cpNew">Új jelszó</label>
+                    <input type="password" id="cpNew" name="new_password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Mentés</button>
+            </form>
+        </div>
+    </div>
+</div>

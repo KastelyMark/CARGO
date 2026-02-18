@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Hitelesítés - CarGO</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="../logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="verify-page">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.png" alt="" width="50px" height="50px" style="border-radius: 50px;">CARGO
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Főoldal</a>
+                <a href="/login" class="nav-link">Bejelentkezés</a>
+                <a href="/register" class="nav-link nav-register-btn">Regisztráció</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="verify-main">
+        <div class="verify-container">
+            <!-- Header -->
+            <div class="verify-header">
+                <div class="logo-section">
+                        <img src="logo.png" alt="" width="60px" height="60px" style="border-radius: 50px;">
+                    <div class="header-text">
+                        <h1>Email Hitelesítés</h1>
+                        <p>Ellenőrizd az email fiókodat és add meg a 6 számjegyű kódot</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step completed" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Regisztráció</div>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="step active" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Verifikáció</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Kész</div>
+                </div>
+            </div>
+
+            <!-- Verification Form -->
+            <form class="verify-form" id="verifyForm">
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-key"></i>
+                        Verifikációs kód
+                    </h3>
+                    
+                    <div class="verification-code-container">
+                        <div class="code-inputs">
+                            <input type="text" class="code-input" maxlength="1" data-index="0">
+                            <input type="text" class="code-input" maxlength="1" data-index="1">
+                            <input type="text" class="code-input" maxlength="1" data-index="2">
+                            <input type="text" class="code-input" maxlength="1" data-index="3">
+                            <input type="text" class="code-input" maxlength="1" data-index="4">
+                            <input type="text" class="code-input" maxlength="1" data-index="5">
+                        </div>
+                        <p class="code-hint">Add meg a 6 számjegyű kódot, amit emailben küldtünk</p>
+                    </div>
+
+                    <!-- Resend Section -->
+                    <div class="resend-section">
+                        <p class="resend-text">Nem kaptad meg a kódot?</p>
+                        <button type="button" class="resend-btn" id="resendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                            Kód újraküldése
+                        </button>
+                        <div class="countdown" id="countdown" style="display: none;">
+                            Újra küldhető: <span id="countdownTimer">60</span> másodperc
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-actions">
+                    <button type="submit" class="verify-btn">
+                        <span class="btn-text">Hitelesítés</span>
+                        <i class="fas fa-check btn-icon"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Back to Registration -->
+            <div class="back-link">
+                <p>Rossz email címet adtál meg? <a href="/register" class="back-link-text">Vissza a regisztrációhoz</a></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Sikeres hitelesítés!</h3>
+            <p>Az email címed sikeresen hitelesítve lett. Most már bejelentkezhetsz a fiókodba.</p>
+            <button class="btn btn-primary" onclick="redirectToLogin()">Tovább a bejelentkezéshez</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
