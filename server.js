@@ -32,9 +32,9 @@ app.use(cors({
     },
     credentials: true
 }));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, 
@@ -54,19 +54,48 @@ app.use(session({
     }
 }));
 
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve logo.ico
+app.get('/logo.ico', (req, res) => {
+    res.sendFile(path.join(__dirname, 'logo.ico'));
+});
 
 // API routes
 app.use('/api', require('./routes'));
 
-// Static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve HTML pages
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
-// Serve uploaded images
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.get('/cars', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'cars.html'));
+});
 
-// Page routes
-app.use('/', require('./routes/pages'));
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
 
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'register.html'));
+});
+
+app.get('/verify', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'verify.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
@@ -91,4 +120,3 @@ app.listen(PORT, '0.0.0.0', async () => {
         console.error('Failed to initialize database:', error);
     }
 });
-

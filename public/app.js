@@ -582,17 +582,32 @@ function displayRentals(rentals) {
         return;
     }
     
-    container.innerHTML = rentals.map(rental => `
-        <div class="rental-item">
-            <h4>${rental.car_name}</h4>
-            <div class="rental-details">
-                <p><strong>Ár:</strong> ${rental.car_price}</p>
-                <p><strong>Bérlés kezdete:</strong> ${new Date(rental.rental_date).toLocaleDateString()}</p>
-                <p><strong>Visszahozatal:</strong> ${new Date(rental.return_date).toLocaleDateString()}</p>
-                <p><strong>Státusz:</strong> <span class="rental-status status-${rental.status}">${getStatusText(rental.status)}</span></p>
+    container.innerHTML = rentals.map(rental => {
+        // Calculate days if not stored
+        const rentalDate = new Date(rental.rental_date);
+        const returnDate = new Date(rental.return_date);
+        const diffTime = returnDate - rentalDate;
+        const totalDays = rental.total_days || Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        // Format total price
+        const totalPrice = rental.total_price ? 
+            parseFloat(rental.total_price).toLocaleString('hu-HU') : 
+            'N/A';
+        
+        return `
+            <div class="rental-item">
+                <h4>${rental.car_name}</h4>
+                <div class="rental-details">
+                    <p><strong>Napi díj:</strong> ${rental.car_price}</p>
+                    <p><strong>Bérlési időszak:</strong> ${totalDays} nap</p>
+                    <p><strong>Bérlés kezdete:</strong> ${new Date(rental.rental_date).toLocaleDateString('hu-HU')}</p>
+                    <p><strong>Visszahozatal:</strong> ${new Date(rental.return_date).toLocaleDateString('hu-HU')}</p>
+                    <p><strong>Teljes bérleti díj:</strong> <span style="color: var(--primary); font-weight: 700; font-size: 1.2em;">${totalPrice} Ft</span></p>
+                    <p><strong>Státusz:</strong> <span class="rental-status status-${rental.status}">${getStatusText(rental.status)}</span></p>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Update stats
@@ -638,22 +653,37 @@ function setupRentalModal() {
     const rentalForm = document.getElementById('rentalForm');
     if (rentalForm) {
         rentalForm.addEventListener('submit', handleRentalSubmission);
+        
+        // Add event listeners for date changes to calculate price
+        const rentalDateInput = document.getElementById('rentalDate');
+        const returnDateInput = document.getElementById('returnDate');
+        
+        if (rentalDateInput) {
+            rentalDateInput.addEventListener('change', calculateRentalPrice);
+        }
+        if (returnDateInput) {
+            returnDateInput.addEventListener('change', calculateRentalPrice);
+        }
     }
 }
 
 // Show rental modal
 async function showRentalModal(carName = '', carPrice = '') {
     if (!currentUser) {
-        showMessage('A bérléshez be kell jelentkezned vagy regisztrálnod kell!', 'error');
+        // Redirect to login with car info
+        const carInfo = encodeURIComponent(JSON.stringify({ name: carName, price: carPrice }));
+        sessionStorage.setItem('pendingRental', carInfo);
+        showMessage('A bérléshez be kell jelentkezned!', 'info');
         setTimeout(() => {
-            window.location.href = 'login';
-        }, 2000);
+            window.location.href = '/login';
+        }, 1500);
         return;
     }
     
     const modal = document.getElementById('rentalModal');
     if (!modal) {
-        window.location.href = `dashboard?car=${encodeURIComponent(carName)}&price=${encodeURIComponent(carPrice)}`;
+        // If no modal on current page, redirect to dashboard with car info
+        window.location.href = `/dashboard?car=${encodeURIComponent(carName)}&price=${encodeURIComponent(carPrice)}`;
         return;
     }
     
@@ -672,6 +702,7 @@ async function showRentalModal(carName = '', carPrice = '') {
         if (option) {
             carSelect.value = option.value;
             updateCarPrice();
+            calculateRentalPrice();
         }
     }
     
@@ -1681,7 +1712,7 @@ async function loadCars() {
         if (data.success) {
             allCars = data.cars;
             displayCars(allCars);
-            initializeFilters();
+            initializeFilters();itializeFilters();
         } else {
             throw new Error(data.message || 'Failed to load cars');
         }
@@ -2305,6 +2336,11 @@ function initializePasswordToggle() {
     });
 }
 
+// Initialize password toggle on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initializePasswordToggle();
+});
+
 // Handle registration form submission
 async function handleRegistration(e) {
     e.preventDefault();
@@ -2445,11 +2481,23 @@ async function handleVerification(e) {
     e.preventDefault();
     
     const codeInputs = document.querySelectorAll('.code-input');
-    const code = Array.from(codeInputs).map(input => input.value).join('');
+    let code = '';
+    
+    // Get code from individual inputs
+    if (codeInputs.length > 0) {
+        code = Array.from(codeInputs).map(input => input.value).join('');
+    } else {
+        // Fallback to single input
+        const singleInput = document.getElementById('verification_code');
+        if (singleInput) {
+            code = singleInput.value;
+        }
+    }
+    
     const submitBtn = e.target.querySelector('.verify-btn');
     
     if (code.length !== 6) {
-        alert('Kérjük, adj meg egy 6 számjegyű kódot');
+        showMessage('Kérjük, adj meg egy 6 számjegyű kódot', 'error');
         return;
     }
     
@@ -2462,26 +2510,38 @@ async function handleVerification(e) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ code })
+            body: JSON.stringify({ verification_code: code }),
+            credentials: 'include'
         });
         
-        const data = await response.json();
+        const result = await response.json();
         
-        if (data.success) {
+        if (result.success) {
             showVerificationSuccessModal();
         } else {
-            throw new Error(data.message || 'Verification failed');
+            showMessage(result.message || 'Hitelesítés sikertelen', 'error');
+            
+            // Clear inputs
+            if (codeInputs.length > 0) {
+                codeInputs.forEach(input => {
+                    input.value = '';
+                    input.classList.remove('filled');
+                });
+                codeInputs[0].focus();
+            }
         }
     } catch (error) {
         console.error('Verification error:', error);
-        alert('Hiba a hitelesítés során: ' + error.message);
+        showMessage('Hiba a hitelesítés során', 'error');
         
         // Clear inputs
-        codeInputs.forEach(input => {
-            input.value = '';
-            input.classList.remove('filled');
-        });
-        codeInputs[0].focus();
+        if (codeInputs.length > 0) {
+            codeInputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('filled');
+            });
+            codeInputs[0].focus();
+        }
     } finally {
         submitBtn.classList.remove('loading');
     }
@@ -2559,6 +2619,11 @@ window.updateRentalStatus = updateRentalStatus;
 window.deleteRental = deleteRental;
 window.closeModal = closeModal;
 window.redirectToLogin = redirectToLogin;
+window.openEditCarModal = openEditCarModal;
+window.handleEditCarSubmit = handleEditCarSubmit;
+window.deleteCar = deleteCar;
+window.openEditUserModal = openEditUserModal;
+window.deleteUserByAdmin = deleteUserByAdmin;
 
 // Load cars for rental dropdown
 async function loadCarsForRental() {
@@ -2606,4 +2671,51 @@ function updateCarPrice() {
             carPriceInput.value = '';
         }
     }
+    
+    // Calculate total price when car is selected
+    calculateRentalPrice();
+}
+
+// Calculate rental price based on dates and car price
+function calculateRentalPrice() {
+    const carSelect = document.getElementById('carSelect');
+    const rentalDateInput = document.getElementById('rentalDate');
+    const returnDateInput = document.getElementById('returnDate');
+    const rentalSummary = document.getElementById('rentalSummary');
+    const totalDaysElement = document.getElementById('totalDays');
+    const totalPriceElement = document.getElementById('totalPrice');
+    
+    if (!carSelect || !rentalDateInput || !returnDateInput || !rentalSummary) {
+        return;
+    }
+    
+    const selectedOption = carSelect.options[carSelect.selectedIndex];
+    const rentalDate = rentalDateInput.value;
+    const returnDate = returnDateInput.value;
+    
+    // Check if all required fields are filled
+    if (!selectedOption || !selectedOption.dataset.price || !rentalDate || !returnDate) {
+        rentalSummary.style.display = 'none';
+        return;
+    }
+    
+    // Calculate days
+    const startDate = new Date(rentalDate);
+    const endDate = new Date(returnDate);
+    const diffTime = endDate - startDate;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays <= 0) {
+        rentalSummary.style.display = 'none';
+        return;
+    }
+    
+    // Calculate total price
+    const pricePerDay = parseFloat(selectedOption.dataset.price);
+    const totalPrice = diffDays * pricePerDay;
+    
+    // Update display
+    totalDaysElement.textContent = `${diffDays} nap`;
+    totalPriceElement.textContent = `${totalPrice.toLocaleString('hu-HU')} Ft`;
+    rentalSummary.style.display = 'block';
 }

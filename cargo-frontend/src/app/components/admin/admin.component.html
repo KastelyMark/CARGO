@@ -1,0 +1,482 @@
+<!-- Admin Panel -->
+<div class="admin-page">
+  
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-large"></div>
+    <p>Betöltés...</p>
+  </div>
+
+  <!-- Login Screen -->
+  <div *ngIf="!isLoading && !isLoggedIn" class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <svg width="64" height="64" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+          <path d="M8 12h16v8H8z" fill="white" opacity="0.9"/>
+          <circle cx="12" cy="20" r="2" fill="white"/>
+          <circle cx="20" cy="20" r="2" fill="white"/>
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#FF6B35"/>
+              <stop offset="100%" style="stop-color:#F7931E"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <h1>Admin Panel</h1>
+        <p>Jelentkezz be az admin felület eléréséhez</p>
+      </div>
+      
+      <form class="login-form" (ngSubmit)="login()">
+        <div class="form-group">
+          <label for="password">Admin jelszó</label>
+          <input 
+            type="password" 
+            id="password" 
+            class="form-control"
+            [(ngModel)]="adminPassword"
+            name="password"
+            placeholder="Írd be az admin jelszót"
+            required
+          >
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block">
+          Bejelentkezés
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div *ngIf="!isLoading && isLoggedIn" class="admin-dashboard">
+    
+    <!-- Header -->
+    <div class="admin-header">
+      <div class="header-left">
+        <h1>Admin Panel</h1>
+        <p>Rendszer kezelés és statisztikák</p>
+      </div>
+      <button class="btn btn-danger" (click)="logout()">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+          <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+        </svg>
+        Kijelentkezés
+      </button>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="admin-tabs">
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'dashboard'"
+        (click)="switchTab('dashboard')">
+        Dashboard
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'users'"
+        (click)="switchTab('users')">
+        Felhasználók ({{ stats.users }})
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'cars'"
+        (click)="switchTab('cars')">
+        Autók ({{ stats.cars }})
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'rentals'"
+        (click)="switchTab('rentals')">
+        Bérlések ({{ stats.rentals }})
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'messages'"
+        (click)="switchTab('messages')">
+        Üzenetek ({{ stats.messages }})
+      </button>
+    </div>
+
+    <!-- Dashboard Tab -->
+    <div *ngIf="activeTab === 'dashboard'" class="tab-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-primary">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ stats.users }}</div>
+            <div class="stat-label">Összes felhasználó</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-success">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ stats.registeredUsers }}</div>
+            <div class="stat-label">Regisztrált felhasználók</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-warning">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M4 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm10 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM6 8a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2H6Z"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ stats.cars }}</div>
+            <div class="stat-label">Autók</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-info">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ stats.rentals }}</div>
+            <div class="stat-label">Bérlések</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div *ngIf="activeTab === 'users'" class="tab-content">
+      <div class="content-header">
+        <h2>Felhasználók kezelése</h2>
+      </div>
+      
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Név</th>
+              <th>Email</th>
+              <th>Telefon</th>
+              <th>Státusz</th>
+              <th>Létrehozva</th>
+              <th>Műveletek</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td>{{ user.id }}</td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.phone || '-' }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="user.is_verified === 1" [class.badge-warning]="user.is_verified === 0">
+                  {{ user.is_verified === 1 ? 'Megerősítve' : 'Függőben' }}
+                </span>
+              </td>
+              <td>{{ formatDate(user.created_at) }}</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn btn-sm btn-primary" (click)="openUserModal(user)">Szerkeszt</button>
+                  <button class="btn btn-sm btn-secondary" (click)="openEmailModal(user)">Email</button>
+                  <button class="btn btn-sm btn-danger" (click)="deleteUser(user.id)">Törlés</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Cars Tab -->
+    <div *ngIf="activeTab === 'cars'" class="tab-content">
+      <div class="content-header">
+        <h2>Autók kezelése</h2>
+        <button class="btn btn-primary" (click)="openCarModal()">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+          </svg>
+          Új autó
+        </button>
+      </div>
+      
+      <div class="cars-grid">
+        <div class="car-card" *ngFor="let car of cars">
+          <div class="car-image">
+            <img *ngIf="car.image_url" [src]="car.image_url" [alt]="car.name">
+            <div *ngIf="!car.image_url" class="no-image">
+              <svg width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M4 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm10 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="car-info">
+            <h3>{{ car.name }}</h3>
+            <p>{{ car.description }}</p>
+            <div class="car-meta">
+              <span class="badge badge-primary">{{ car.category }}</span>
+              <span class="price">{{ formatPrice(car.price_per_day) }} Ft/nap</span>
+            </div>
+            <div class="car-actions">
+              <button class="btn btn-sm btn-primary" (click)="openCarModal(car)">Szerkeszt</button>
+              <button class="btn btn-sm btn-danger" (click)="deleteCar(car.id)">Törlés</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rentals Tab -->
+    <div *ngIf="activeTab === 'rentals'" class="tab-content">
+      <div class="content-header">
+        <h2>Bérlések kezelése</h2>
+      </div>
+      
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Felhasználó ID</th>
+              <th>Autó ID</th>
+              <th>Kezdés</th>
+              <th>Vége</th>
+              <th>Napok</th>
+              <th>Ár</th>
+              <th>Státusz</th>
+              <th>Műveletek</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rental of rentals">
+              <td>{{ rental.id }}</td>
+              <td>{{ rental.user_id }}</td>
+              <td>{{ rental.car_id }}</td>
+              <td>{{ formatDate(rental.start_date) }}</td>
+              <td>{{ formatDate(rental.end_date) }}</td>
+              <td>{{ rental.total_days }}</td>
+              <td>{{ formatPrice(rental.total_price) }} Ft</td>
+              <td>
+                <select 
+                  class="status-select" 
+                  [value]="rental.status"
+                  (change)="updateRentalStatus(rental.id, $any($event.target).value)">
+                  <option value="pending">Függőben</option>
+                  <option value="confirmed">Megerősítve</option>
+                  <option value="active">Aktív</option>
+                  <option value="completed">Befejezve</option>
+                  <option value="cancelled">Törölve</option>
+                </select>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-danger" (click)="deleteRental(rental.id)">Törlés</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Messages Tab -->
+    <div *ngIf="activeTab === 'messages'" class="tab-content">
+      <div class="content-header">
+        <h2>Üzenetek kezelése</h2>
+      </div>
+      
+      <div class="messages-list">
+        <div class="message-card" *ngFor="let message of messages">
+          <div class="message-header">
+            <div>
+              <h4>{{ message.name }}</h4>
+              <p class="message-email">{{ message.email }}</p>
+            </div>
+            <span class="badge" [class.badge-warning]="message.status === 'new'" [class.badge-success]="message.status === 'read'">
+              {{ message.status === 'new' ? 'Új' : 'Olvasott' }}
+            </span>
+          </div>
+          <div class="message-body">
+            <p>{{ message.message }}</p>
+          </div>
+          <div class="message-footer">
+            <span class="message-date">{{ formatDate(message.created_at) }}</span>
+            <div class="action-buttons">
+              <button 
+                *ngIf="message.status === 'new'"
+                class="btn btn-sm btn-primary" 
+                (click)="updateMessageStatus(message.id, 'read')">
+                Olvasottnak jelöl
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="deleteMessage(message.id)">Törlés</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Car Modal -->
+  <div *ngIf="showCarModal" class="modal-overlay" (click)="closeCarModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ carForm.id ? 'Autó szerkesztése' : 'Új autó hozzáadása' }}</h2>
+        <button class="close-btn" (click)="closeCarModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="saveCar()">
+          <div class="form-group">
+            <label>Név</label>
+            <input type="text" class="form-control" [(ngModel)]="carForm.name" name="name" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Leírás</label>
+            <textarea class="form-control" [(ngModel)]="carForm.description" name="description" rows="3"></textarea>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Ár (Ft/nap)</label>
+              <input type="number" class="form-control" [(ngModel)]="carForm.price_per_day" name="price" required>
+            </div>
+            
+            <div class="form-group">
+              <label>Ülések</label>
+              <input type="number" class="form-control" [(ngModel)]="carForm.seats" name="seats" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Kategória</label>
+              <select class="form-control" [(ngModel)]="carForm.category" name="category">
+                <option value="Gazdaságos">Gazdaságos</option>
+                <option value="Középkategória">Középkategória</option>
+                <option value="Prémium">Prémium</option>
+                <option value="Luxus">Luxus</option>
+                <option value="SUV">SUV</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Váltó</label>
+              <select class="form-control" [(ngModel)]="carForm.transmission" name="transmission">
+                <option value="automatic">Automata</option>
+                <option value="manual">Manuális</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Üzemanyag</label>
+            <select class="form-control" [(ngModel)]="carForm.fuel_type" name="fuel_type">
+              <option value="Benzin">Benzin</option>
+              <option value="Dízel">Dízel</option>
+              <option value="Hibrid">Hibrid</option>
+              <option value="Elektromos">Elektromos</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Kép</label>
+            <input type="file" class="form-control" (change)="onImageSelected($event)" accept="image/*">
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeCarModal()">Mégse</button>
+            <button type="submit" class="btn btn-primary">Mentés</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Modal -->
+  <div *ngIf="showUserModal" class="modal-overlay" (click)="closeUserModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Felhasználó szerkesztése</h2>
+        <button class="close-btn" (click)="closeUserModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="saveUser()">
+          <div class="form-group">
+            <label>Név</label>
+            <input type="text" class="form-control" [(ngModel)]="userForm.name" name="name" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-control" [(ngModel)]="userForm.email" name="email" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Telefon</label>
+            <input type="text" class="form-control" [(ngModel)]="userForm.phone" name="phone">
+          </div>
+          
+          <div class="form-group">
+            <label>Státusz</label>
+            <select class="form-control" [(ngModel)]="userForm.is_verified" name="is_verified">
+              <option [value]="1">Megerősítve</option>
+              <option [value]="0">Függőben</option>
+            </select>
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeUserModal()">Mégse</button>
+            <button type="submit" class="btn btn-primary">Mentés</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Modal -->
+  <div *ngIf="showEmailModal" class="modal-overlay" (click)="closeEmailModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Email küldése</h2>
+        <button class="close-btn" (click)="closeEmailModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="sendEmail()">
+          <div class="form-group">
+            <label>Címzett</label>
+            <input type="text" class="form-control" [value]="emailForm.toName + ' (' + emailForm.toEmail + ')'" disabled>
+          </div>
+          
+          <div class="form-group">
+            <label>Tárgy</label>
+            <input type="text" class="form-control" [(ngModel)]="emailForm.subject" name="subject" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Üzenet</label>
+            <textarea class="form-control" [(ngModel)]="emailForm.message" name="message" rows="6" required></textarea>
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeEmailModal()">Mégse</button>
+            <button type="submit" class="btn btn-primary">Küldés</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Messages -->
+  <div class="alert-container" *ngIf="showMessage">
+    <div class="alert" [class.alert-success]="messageType === 'success'" [class.alert-danger]="messageType === 'error'">
+      {{ messageText }}
+    </div>
+  </div>
+</div>

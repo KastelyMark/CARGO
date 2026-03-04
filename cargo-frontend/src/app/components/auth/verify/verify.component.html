@@ -1,0 +1,180 @@
+<!-- Modern Verification Page -->
+<div class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card animate-fade-in">
+      <!-- Header -->
+      <div class="auth-header">
+        <div class="auth-logo">
+          <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+            <path d="M8 12h16v8H8z" fill="white" opacity="0.9"/>
+            <circle cx="12" cy="20" r="2" fill="white"/>
+            <circle cx="20" cy="20" r="2" fill="white"/>
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea"/>
+                <stop offset="100%" style="stop-color:#764ba2"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h1>Email hitelesítés</h1>
+        <p>Add meg a 6 jegyű kódot, amit emailben küldtünk</p>
+        <p *ngIf="verificationEmail" class="email-info">
+          <strong>{{ verificationEmail }}</strong> címre
+        </p>
+      </div>
+
+      <!-- Verification Form -->
+      <div class="auth-form">
+        <div class="verification-section">
+          <div class="code-input-group">
+            <input 
+              type="text" 
+              class="code-input"
+              #input0
+              (input)="onInput($event, 0)"
+              (keydown)="onKeyDown($event, 0)"
+              (paste)="onPaste($event)"
+              maxlength="1"
+              autocomplete="off"
+              inputmode="numeric"
+            >
+            <input 
+              type="text" 
+              class="code-input"
+              #input1
+              (input)="onInput($event, 1)"
+              (keydown)="onKeyDown($event, 1)"
+              (paste)="onPaste($event)"
+              maxlength="1"
+              autocomplete="off"
+              inputmode="numeric"
+            >
+            <input 
+              type="text" 
+              class="code-input"
+              #input2
+              (input)="onInput($event, 2)"
+              (keydown)="onKeyDown($event, 2)"
+              (paste)="onPaste($event)"
+              maxlength="1"
+              autocomplete="off"
+              inputmode="numeric"
+            >
+            <input 
+              type="text" 
+              class="code-input"
+              #input3
+              (input)="onInput($event, 3)"
+              (keydown)="onKeyDown($event, 3)"
+              (paste)="onPaste($event)"
+              maxlength="1"
+              autocomplete="off"
+              inputmode="numeric"
+            >
+            <input 
+              type="text" 
+              class="code-input"
+              #input4
+              (input)="onInput($event, 4)"
+              (keydown)="onKeyDown($event, 4)"
+              (paste)="onPaste($event)"
+              maxlength="1"
+              autocomplete="off"
+              inputmode="numeric"
+            >
+            <input 
+              type="text" 
+              class="code-input"
+              #input5
+              (input)="onInput($event, 5)"
+              (keydown)="onKeyDown($event, 5)"
+              (paste)="onPaste($event)"
+              maxlength="1"
+              autocomplete="off"
+              inputmode="numeric"
+            >
+          </div>
+          
+          <div class="verification-info">
+            <div class="info-item">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+              </svg>
+              <span>Ellenőrizd a spam mappát is</span>
+            </div>
+            <div class="info-item">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+              </svg>
+              <span>A kód 10 percig érvényes</span>
+            </div>
+          </div>
+          </div>
+
+        <button 
+          type="button" 
+          class="btn btn-primary btn-lg auth-submit"
+          [disabled]="buttonDisabled"
+          (click)="onSubmit()"
+        >
+          <span *ngIf="isSubmitting" class="spinner"></span>
+          <svg *ngIf="!isSubmitting" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+          </svg>
+          {{ isSubmitting ? 'Hitelesítés...' : 'Fiók hitelesítése' }}
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <div class="auth-footer">
+        <p>
+          Nem kaptad meg a kódot? 
+          <button 
+            type="button" 
+            class="auth-link-button"
+            [disabled]="isResending"
+            (click)="resendCode()"
+          >
+            <span *ngIf="isResending" class="spinner-small"></span>
+            {{ isResending ? 'Küldés...' : 'Újraküldés' }}
+          </button>
+        </p>
+        <p>
+          <a routerLink="/login" class="auth-link">Vissza a bejelentkezéshez</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal-overlay" *ngIf="showSuccessModal" (click)="redirectToLogin()">
+    <div class="success-modal animate-fade-in" (click)="$event.stopPropagation()">
+      <div class="success-icon">
+        <svg width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+        </svg>
+      </div>
+      <h2>Sikeres hitelesítés!</h2>
+      <p>A fiókod sikeresen hitelesítve lett. Most már bejelentkezhetsz.</p>
+      <button class="btn btn-primary btn-lg" (click)="redirectToLogin()">
+        Bejelentkezés
+      </button>
+    </div>
+  </div>
+
+  <!-- Alert Messages -->
+  <div class="alert-container" *ngIf="showMessage">
+    <div class="alert animate-slide-in" [class.alert-success]="messageType === 'success'" [class.alert-danger]="messageType === 'error'">
+      <svg *ngIf="messageType === 'success'" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+      </svg>
+      <svg *ngIf="messageType === 'error'" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+      </svg>
+      {{ messageText }}
+    </div>
+  </div>
+</div>

@@ -3,23 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Hitelesítés - CarGO</title>
+    <title>CARGO - Email Hitelesítés</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="../logo.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="logo.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="verify-page">
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <img src="logo.png" alt="" width="50px" height="50px" style="border-radius: 50px;">CARGO
+                <img src="logo.png" alt="CarGO Logo" width="50" height="50" style="border-radius: 50%;">
+                <span>CarGO</span>
             </div>
-            <div class="nav-menu">
-                <a href="/" class="nav-link">Főoldal</a>
-                <a href="/login" class="nav-link">Bejelentkezés</a>
-                <a href="/register" class="nav-link nav-register-btn">Regisztráció</a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Főoldal</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/login" class="nav-link">Bejelentkezés</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/register" class="nav-link nav-register-btn">Regisztráció</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
             </div>
         </div>
     </nav>
@@ -30,7 +42,9 @@
             <!-- Header -->
             <div class="verify-header">
                 <div class="logo-section">
-                        <img src="logo.png" alt="" width="60px" height="60px" style="border-radius: 50px;">
+                    <div class="logo-icon">
+                        <i class="fas fa-envelope-open"></i>
+                    </div>
                     <div class="header-text">
                         <h1>Email Hitelesítés</h1>
                         <p>Ellenőrizd az email fiókodat és add meg a 6 számjegyű kódot</p>
@@ -74,6 +88,11 @@
                             <input type="text" class="code-input" maxlength="1" data-index="5">
                         </div>
                         <p class="code-hint">Add meg a 6 számjegyű kódot, amit emailben küldtünk</p>
+                        
+                        <!-- Alternative single input for compatibility -->
+                        <div style="display: none;">
+                            <input type="text" id="verification_code" name="verification_code" maxlength="6">
+                        </div>
                     </div>
 
                     <!-- Resend Section -->
@@ -84,23 +103,23 @@
                             Kód újraküldése
                         </button>
                         <div class="countdown" id="countdown" style="display: none;">
-                            Újra küldhető: <span id="countdownTimer">60</span> másodperc
+                            Újra küldhető: <span id="countdownTimer">60</span> másodperc múlva
                         </div>
                     </div>
                 </div>
 
                 <!-- Submit Button -->
-                <div class="form-actions">
-                    <button type="submit" class="verify-btn">
-                        <span class="btn-text">Hitelesítés</span>
-                        <i class="fas fa-check btn-icon"></i>
-                    </button>
-                </div>
+                <button type="submit" class="verify-btn">
+                    <span class="btn-text">Email hitelesítése</span>
+                    <i class="fas fa-check-circle btn-icon"></i>
+                </button>
             </form>
 
             <!-- Back to Registration -->
             <div class="back-link">
-                <p>Rossz email címet adtál meg? <a href="/register" class="back-link-text">Vissza a regisztrációhoz</a></p>
+                <p>Rossz email címet adtál meg? <a href="/register" class="back-link-text">
+                    <i class="fas fa-arrow-left"></i> Vissza a regisztrációhoz
+                </a></p>
             </div>
         </div>
     </main>
@@ -112,8 +131,10 @@
                 <i class="fas fa-check-circle"></i>
             </div>
             <h3>Sikeres hitelesítés!</h3>
-            <p>Az email címed sikeresen hitelesítve lett. Most már bejelentkezhetsz a fiókodba.</p>
-            <button class="btn btn-primary" onclick="redirectToLogin()">Tovább a bejelentkezéshez</button>
+            <p>Az email címed sikeresen hitelesítve lett. Most már bejelentkezhetsz a fiókodba és elkezdheted az autók bérlését.</p>
+            <button class="btn btn-primary" onclick="redirectToLogin()">
+                <i class="fas fa-sign-in-alt"></i> Tovább a bejelentkezéshez
+            </button>
         </div>
     </div>
 

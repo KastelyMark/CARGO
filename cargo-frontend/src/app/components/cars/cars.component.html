@@ -1,0 +1,136 @@
+<app-navbar></app-navbar>
+
+<div class="cars-page">
+  <!-- Header -->
+  <section class="cars-header">
+    <div class="container">
+      <h1>Autóink</h1>
+      <p>Válassz a prémium járműveink közül</p>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <section class="filters-section">
+    <div class="container">
+      <div class="filters-container">
+        <div class="filter-group">
+          <label for="categoryFilter">Kategória</label>
+          <select id="categoryFilter" class="filter-select" [(ngModel)]="filters.category" (change)="applyFilters()">
+            <option value="">Összes kategória</option>
+            <option value="Gazdaságos">Gazdaságos</option>
+            <option value="Középkategória">Középkategória</option>
+            <option value="Prémium">Prémium</option>
+            <option value="Luxus">Luxus</option>
+            <option value="SUV">SUV</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="priceFilter">Ár (Ft/nap)</label>
+          <select id="priceFilter" class="filter-select" [(ngModel)]="filters.price" (change)="applyFilters()">
+            <option value="">Minden ár</option>
+            <option value="0-10000">0 - 10,000 Ft</option>
+            <option value="10000-20000">10,000 - 20,000 Ft</option>
+            <option value="20000-30000">20,000 - 30,000 Ft</option>
+            <option value="30000-50000">30,000 - 50,000 Ft</option>
+            <option value="50000-999999">50,000+ Ft</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="transmissionFilter">Váltó</label>
+          <select id="transmissionFilter" class="filter-select" [(ngModel)]="filters.transmission" (change)="applyFilters()">
+            <option value="">Minden váltó</option>
+            <option value="automatic">Automata</option>
+            <option value="manual">Manuális</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="fuelFilter">Üzemanyag</label>
+          <select id="fuelFilter" class="filter-select" [(ngModel)]="filters.fuel" (change)="applyFilters()">
+            <option value="">Minden üzemanyag</option>
+            <option value="Benzin">Benzin</option>
+            <option value="Dízel">Dízel</option>
+            <option value="Hibrid">Hibrid</option>
+            <option value="Elektromos">Elektromos</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="seatsFilter">Ülések száma</label>
+          <select id="seatsFilter" class="filter-select" [(ngModel)]="filters.seats" (change)="applyFilters()">
+            <option value="">Minden</option>
+            <option value="2">2 fő</option>
+            <option value="4">4 fő</option>
+            <option value="5">5 fő</option>
+            <option value="7">7+ fő</option>
+          </select>
+        </div>
+
+        <button class="btn btn-secondary" (click)="clearAllFilters()">
+          <i class="fas fa-times"></i> Szűrők törlése
+        </button>
+      </div>
+
+      <div class="filter-results">
+        <span class="filter-count">{{ getFilterCountText() }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cars Grid -->
+  <section class="cars-section">
+    <div class="container">
+      <div class="cars-grid" *ngIf="filteredCars.length > 0">
+        <div class="car-card" *ngFor="let car of filteredCars; let i = index">
+          <div class="car-image">
+            <img *ngIf="car.image_url" 
+                 [src]="car.image_url" 
+                 [alt]="car.name"
+                 (error)="onImageError($event)">
+            <div class="fallback-icon" *ngIf="!car.image_url">
+              <i class="fas fa-car"></i>
+            </div>
+          </div>
+          <div class="car-info">
+            <div class="car-category" [class]="getCategoryClass(car.category)">
+              {{ car.category }}
+            </div>
+            <h3>{{ car.name }}</h3>
+            <p>{{ car.description }}</p>
+            <div class="car-features">
+              <span><i class="fas fa-users"></i> {{ car.seats }} fő</span>
+              <span><i class="fas fa-cog"></i> {{ getTransmissionText(car.transmission) }}</span>
+              <span><i class="fas fa-gas-pump"></i> {{ car.fuel_type }}</span>
+            </div>
+            <div class="car-price">{{ formatPrice(car.price_per_day) }} Ft/nap</div>
+            <button class="btn btn-primary" (click)="showRentalModal(car)">Bérlés</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-cars-message" *ngIf="filteredCars.length === 0 && !isLoading">
+        <i class="fas fa-car"></i>
+        <p>Nincsenek autók a megadott szűrési feltételeknek megfelelően.</p>
+      </div>
+
+      <div class="loading-message" *ngIf="isLoading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Autók betöltése...</p>
+      </div>
+
+      <div class="error-message" *ngIf="hasError">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Hiba az autók betöltése során. Kérjük, próbálja újra később.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Messages -->
+<div class="message-container" *ngIf="showMessage">
+  <div class="message" [class]="messageType">
+    {{ messageText }}
+  </div>
+</div>

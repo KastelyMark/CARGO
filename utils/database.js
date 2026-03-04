@@ -119,6 +119,8 @@ async function initializeDatabase() {
                 return_date DATE NOT NULL,
                 customer_name VARCHAR(100) NOT NULL,
                 customer_email VARCHAR(100) NOT NULL,
+                total_days INT NOT NULL DEFAULT 1,
+                total_price DECIMAL(10,2) NOT NULL DEFAULT 0,
                 status ENUM('pending', 'confirmed', 'completed', 'cancelled') DEFAULT 'pending',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,

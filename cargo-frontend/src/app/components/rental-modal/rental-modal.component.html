@@ -1,0 +1,115 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><i class="fas fa-car"></i> Autó bérlése</h2>
+      <button class="close-btn" (click)="closeModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="onSubmit()">
+        <!-- Selected Car Display (Read-only) -->
+        <div class="form-group">
+          <label>
+            <i class="fas fa-car"></i> Kiválasztott autó
+          </label>
+          <div class="selected-car-display">
+            <div class="car-info-box">
+              <h3>{{ selectedCar?.name || 'Betöltés...' }}</h3>
+              <p class="car-price">{{ selectedCar ? formatPrice(selectedCar.price_per_day) : '0 Ft' }}/nap</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rental Date -->
+        <div class="form-group">
+          <label for="rentalDate">
+            <i class="fas fa-calendar-alt"></i> Bérlés kezdete
+          </label>
+          <input 
+            type="date" 
+            id="rentalDate" 
+            [(ngModel)]="rentalDate" 
+            name="rentalDate"
+            (change)="onDateChange()"
+            [min]="rentalDate"
+            required
+            class="form-control">
+        </div>
+
+        <!-- Return Date -->
+        <div class="form-group">
+          <label for="returnDate">
+            <i class="fas fa-calendar-check"></i> Visszahozatal dátuma
+          </label>
+          <input 
+            type="date" 
+            id="returnDate" 
+            [(ngModel)]="returnDate" 
+            name="returnDate"
+            (change)="onDateChange()"
+            [min]="rentalDate"
+            required
+            class="form-control">
+        </div>
+
+        <!-- Rental Summary -->
+        <div class="rental-summary" *ngIf="showSummary">
+          <div class="summary-card">
+            <p class="summary-label">Bérlési időszak</p>
+            <h3 class="summary-days">{{ totalDays }} nap</h3>
+            <p class="summary-label">Teljes bérleti díj</p>
+            <h2 class="summary-price">{{ formatPrice(totalPrice) }}</h2>
+          </div>
+        </div>
+
+        <!-- Customer Name -->
+        <div class="form-group">
+          <label for="customerName">
+            <i class="fas fa-user"></i> Név
+          </label>
+          <input 
+            type="text" 
+            id="customerName" 
+            [(ngModel)]="customerName" 
+            name="customerName"
+            placeholder="Teljes név"
+            required
+            class="form-control">
+        </div>
+
+        <!-- Customer Email -->
+        <div class="form-group">
+          <label for="customerEmail">
+            <i class="fas fa-envelope"></i> Email
+          </label>
+          <input 
+            type="email" 
+            id="customerEmail" 
+            [(ngModel)]="customerEmail" 
+            name="customerEmail"
+            placeholder="Email cím"
+            required
+            class="form-control">
+        </div>
+
+        <!-- Error Message -->
+        <div class="alert alert-danger" *ngIf="error">
+          {{ error }}
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          class="btn btn-primary btn-block"
+          [disabled]="isLoading">
+          <span *ngIf="!isLoading">
+            <i class="fas fa-paper-plane"></i> Bérlési kérelem elküldése
+          </span>
+          <span *ngIf="isLoading">
+            <i class="fas fa-spinner fa-spin"></i> Küldés...
+          </span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

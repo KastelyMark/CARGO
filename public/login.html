@@ -3,40 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bejelentkezés - Car Rent</title>
+    <title>CARGO - Bejelentkezés</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="../logo.png" type="image/png">
+    <link rel="icon" href="logo.ico" type="image/x-icon">
 </head>
 <body class="auth-body">
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <img src="logo.png" alt="" width="60px" height="60px" style="border-radius: 60px;">
-                <h1>CARGO</h1>
-                <h2>Bejelentkezs</h2>
-                <p>Jelentkzz be a fikodba</p>
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>CarGO</h1>
+                        <p>Bejelentkezés a fiókodba</p>
+                    </div>
+                </div>
             </div>
 
             <form class="auth-form" id="loginForm">
                 <div class="form-group">
-                    <label for="email">Emil cím</label>
-                    <input type="email" id="email" name="email" required>
+                    <label for="email"><i class="fas fa-envelope"></i> Email cím</label>
+                    <input type="email" id="email" name="email" placeholder="Add meg az email címed" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">Jelszó</label>
-                    <input type="password" id="password" name="password" required>
+                    <label for="password"><i class="fas fa-lock"></i> Jelszó</label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" placeholder="Add meg a jelszavad" required>
+                        <button type="button" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-full">Bejelentkezés</button>
-                <div style="margin-top:10px; text-align:center;">
-                    <button type="button" id="forgotPasswordBtn" class="btn btn-link">Elfelejtetted a jelszavad?</button>
+                <button type="submit" class="btn btn-primary btn-full">
+                    <span class="btn-text">Bejelentkezés</span>
+                    <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+                <div style="margin-top:15px; text-align:center;">
+                    <button type="button" id="forgotPasswordBtn" class="btn btn-link">
+                        <i class="fas fa-question-circle"></i> Elfelejtetted a jelszavad?
+                    </button>
                 </div>
             </form>
 
             <div class="auth-footer">
-                <p>Nincs fiókod? <a href="/register">Regisztrálj itt</a></p>
-                <p><a href="/">← Vissza a főoldalra</a></p>
+                <p>Nincs még fiókod? <a href="/register" class="login-link-text">Regisztrálj itt</a></p>
+                <p><a href="/" class="back-link-text"><i class="fas fa-arrow-left"></i> Vissza a főoldalra</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot password modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-key"></i> Jelszó visszaállítása</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: var(--text); opacity: 0.9;">Add meg az email címed és küldünk egy ideiglenes jelszót.</p>
+                <form id="forgotPasswordForm">
+                    <div class="form-group">
+                        <label for="fpEmail"><i class="fas fa-envelope"></i> Email cím</label>
+                        <input type="email" id="fpEmail" name="email" placeholder="Add meg az email címed" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Ideiglenes jelszó küldése
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change password modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-lock"></i> Új jelszó megadása</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: var(--text); opacity: 0.9;">Ideiglenes jelszóval jelentkeztél be. Kérjük, adj meg egy új, biztonságos jelszót.</p>
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label for="cpEmail"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="cpEmail" name="email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="cpTemp"><i class="fas fa-key"></i> Ideiglenes jelszó</label>
+                        <input type="password" id="cpTemp" name="temp_password" placeholder="Ideiglenes jelszó" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cpNew"><i class="fas fa-lock"></i> Új jelszó</label>
+                        <div class="password-input">
+                            <input type="password" id="cpNew" name="new_password" placeholder="Új, biztonságos jelszó" required>
+                            <button type="button" class="password-toggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Jelszó mentése
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -44,43 +116,3 @@
     <script src="app.js"></script>
 </body>
 </html>
-
-<!-- Forgot password modal -->
-<div id="forgotPasswordModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h2>Elfelejtetted a jelszavad?</h2><span class="close">&times;</span></div>
-        <div class="modal-body">
-            <form id="forgotPasswordForm">
-                <div class="form-group">
-                    <label for="fpEmail">Email cím</label>
-                    <input type="email" id="fpEmail" name="email" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Küldés</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Change password modal (used after login with temp password or via modal flow) -->
-<div id="changePasswordModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h2>Új jelszó megadása</h2><span class="close">&times;</span></div>
-        <div class="modal-body">
-            <form id="changePasswordForm">
-                <div class="form-group">
-                    <label for="cpEmail">Email</label>
-                    <input type="email" id="cpEmail" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="cpTemp">Ideiglenes jelszó</label>
-                    <input type="password" id="cpTemp" name="temp_password">
-                </div>
-                <div class="form-group">
-                    <label for="cpNew">Új jelszó</label>
-                    <input type="password" id="cpNew" name="new_password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Mentés</button>
-            </form>
-        </div>
-    </div>
-</div>

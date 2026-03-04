@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CARGO - Autóbérlés</title>
+    <title>CARGO - Kezdőlap</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="../logo.png" type="image/png">
+    <link rel="icon" href="../logo.ico" type="image/x-icon">
     <!-- Leaflet map CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar" style="background-color: black;">
+    <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <img src="logo.png" alt="" width="60px" height="60px" style="border-radius: 60px;">CARGO
+                <img src="logo.png" alt="CarGO Logo" width="50" height="50" style="border-radius: 50%;">
+                <span>CarGO</span>
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
@@ -32,10 +33,13 @@
                     <a href="#contact" class="nav-link">Kapcsolat</a>
                 </li>
                 <li class="nav-item">
-                    <a href="login" class="nav-link" id="loginLink">Bejelentkezés</a>
+                    <a href="/login" class="nav-link" id="loginLink">Bejelentkezés</a>
                 </li>
                 <li class="nav-item">
                     <a href="/register" class="nav-link nav-register-btn" id="registerLink">Regisztráció</a>
+                </li>
+                <li class="nav-item" id="userInfo" style="display: none;">
+                    <a href="/dashboard" class="nav-link">Dashboard</a>
                 </li>
             </ul>
             <div class="hamburger">

@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autók - CARGO</title>
+    <title>CARGO - Autók</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="../logo.png" type="image/png">
+    <link rel="icon" href="../logo.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -14,7 +14,8 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <img src="logo.png" alt="" width="60px" height="60px" style="border-radius: 60px;">CARGO
+                <img src="logo.png" alt="CarGO Logo" width="50" height="50" style="border-radius: 50%;">
+                <span>CarGO</span>
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
@@ -35,6 +36,9 @@
                 <li class="nav-item">
                     <a href="/register" class="nav-link nav-register-btn" id="registerLink">Regisztráció</a>
                 </li>
+                <li class="nav-item" id="userInfo" style="display: none;">
+                    <a href="/dashboard" class="nav-link">Dashboard</a>
+                </li>
             </ul>
             <div class="hamburger">
                 <span class="bar"></span>
@@ -45,9 +49,9 @@
     </nav>
 
     <!-- Cars Section -->
-    <section class="cars-section">
+    <section class="cars-section" style="padding-top: 100px;">
         <div class="container">
-            <h2 class="section-title">Válassz autót</h2>
+            <h2 class="section-title"><i class="fas fa-car"></i> Válassz autót</h2>
             
             <!-- Filter Section -->
             <div class="filter-section">
@@ -60,7 +64,7 @@
                                 <option value="Gazdaságos">Gazdaságos</option>
                                 <option value="kompakt">Kompakt</option>
                                 <option value="Középkategória">Középkategória</option>
-                                <option value="Luxus">Luxus</option>
+                                <option value="luxus">Luxus</option>
                                 <option value="suv">SUV</option>
                                 <option value="sports">Sport</option>
                             </select>
@@ -93,8 +97,8 @@
                                 <option value="">Összes üzemanyag</option>
                                 <option value="Benzin">Benzin</option>
                                 <option value="Diesel">Dízel</option>
-                                <option value="hybrid">Hibrid</option>
-                                <option value="electric">Elektromos</option>
+                                <option value="Hybrid">Hibrid</option>
+                                <option value="Electric">Elektromos</option>
                             </select>
                         </div>
                         

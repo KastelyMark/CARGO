@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - CARGO</title>
+    <title>CARGO - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="../logo.png" type="image/png">
+    <link rel="icon" href="logo.ico" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -14,32 +14,43 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <img src="logo.png" alt="" width="50px" height="50px" style="border-radius: 60px;"> CARGO
+                <img src="logo.png" alt="CarGO Logo" width="50" height="50" style="border-radius: 50%;">
+                <span>CarGO</span>
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
                     <a href="/" class="nav-link">Főoldal</a>
                 </li>
                 <li class="nav-item">
-                    <a href="cars.html" class="nav-link">Autók</a>
+                    <a href="/cars" class="nav-link">Autók</a>
                 </li>
                 <li class="nav-item">
                     <a href="/#contact" class="nav-link">Kapcsolat</a>
                 </li>
                 <li class="nav-item">
-                    <span class="nav-link user-info" id="userInfo">Üdvözöljük!</span>
+                    <a href="/dashboard" class="nav-link active">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <button class="btn btn-secondary" id="logoutBtn">Kijelentkezés</button>
+                    <button class="btn btn-secondary" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Kijelentkezés
+                    </button>
                 </li>
             </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
         </div>
     </nav>
 
     <!-- Dashboard Content -->
     <div class="dashboard-container">
         <div class="container">
-            <h1 class="dashboard-title">Üdvözöljük a dashboard-on!</h1>
+            <h1 class="dashboard-title">
+                <i class="fas fa-tachometer-alt"></i> 
+                Üdvözöljük a dashboard-on!
+            </h1>
             
             <div class="dashboard-stats">
                 <div class="stat-card">
@@ -60,7 +71,7 @@
             </div>
 
             <div class="dashboard-section">
-                <h2>Bérléseim</h2>
+                <h2><i class="fas fa-list"></i> Bérléseim</h2>
                 <div class="rentals-container" id="rentalsContainer">
                     <div class="loading">
                         <i class="fas fa-spinner fa-spin"></i>
@@ -70,9 +81,12 @@
             </div>
 
             <div class="dashboard-actions">
-                <button class="btn btn-primary" onclick="showRentalModal('Válassz autót', 'Válassz árat')">
-                    <i class="fas fa-plus"></i> Új bérlés
+                <button class="btn btn-primary" onclick="showRentalModal('', '')">
+                    <i class="fas fa-plus"></i> Új bérlés indítása
                 </button>
+                <a href="/cars" class="btn btn-secondary">
+                    <i class="fas fa-car"></i> Autók böngészése
+                </a>
             </div>
         </div>
     </div>
@@ -81,39 +95,49 @@
     <div id="rentalModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Autó bérlése</h2>
+                <h2><i class="fas fa-car"></i> Autó bérlése</h2>
                 <span class="close">&times;</span>
             </div>
             <div class="modal-body">
                 <form id="rentalForm" class="rental-form">
                     <div class="form-group">
-                        <label for="carSelect">Autó</label>
+                        <label for="carSelect"><i class="fas fa-car"></i> Autó</label>
                         <select id="carSelect" name="carId" required>
                             <option value="">Válassz autót...</option>
                             <!-- Cars will be loaded dynamically from database -->
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="carPrice">Ár (Ft/nap)</label>
+                        <label for="carPrice"><i class="fas fa-tag"></i> Ár (Ft/nap)</label>
                         <input type="text" id="carPrice" name="carPrice" readonly placeholder="Autó kiválasztása után jelenik meg">
                     </div>
                     <div class="form-group">
-                        <label for="rentalDate">Bérlés kezdete</label>
+                        <label for="rentalDate"><i class="fas fa-calendar-alt"></i> Bérlés kezdete</label>
                         <input type="date" id="rentalDate" name="rentalDate" required>
                     </div>
                     <div class="form-group">
-                        <label for="returnDate">Visszahozatal dátuma</label>
+                        <label for="returnDate"><i class="fas fa-calendar-check"></i> Visszahozatal dátuma</label>
                         <input type="date" id="returnDate" name="returnDate" required>
                     </div>
-                    <div class="form-group">
-                        <label for="customerName">Név</label>
-                        <input type="text" id="customerName" name="customerName" required>
+                    <div class="form-group" id="rentalSummary" style="display: none;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; color: white; text-align: center;">
+                            <p style="margin: 0 0 10px 0; font-size: 14px; opacity: 0.9;">Bérlési időszak</p>
+                            <h3 id="totalDays" style="margin: 0 0 15px 0; font-size: 28px; font-weight: 700;">0 nap</h3>
+                            <p style="margin: 0 0 5px 0; font-size: 14px; opacity: 0.9;">Teljes bérleti díj</p>
+                            <h2 id="totalPrice" style="margin: 0; font-size: 36px; font-weight: 700;">0 Ft</h2>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="customerEmail">Email</label>
-                        <input type="email" id="customerEmail" name="customerEmail" required>
+                        <label for="customerName"><i class="fas fa-user"></i> Név</label>
+                        <input type="text" id="customerName" name="customerName" placeholder="Teljes név" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Bérlés elküldése</button>
+                    <div class="form-group">
+                        <label for="customerEmail"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="customerEmail" name="customerEmail" placeholder="Email cím" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Bérlési kérelem elküldése
+                    </button>
                 </form>
             </div>
         </div>

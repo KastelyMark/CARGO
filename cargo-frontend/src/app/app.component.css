@@ -1,0 +1,17 @@
+/* App Layout Styles */
+.main-content {
+  margin-top: 70px; /* Account for fixed navbar */
+  min-height: calc(100vh - 70px);
+  background: var(--gray-50);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body reset */
+body {
+  margin: 0;
+  padding: 0;
+}

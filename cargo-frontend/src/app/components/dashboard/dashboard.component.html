@@ -1,0 +1,248 @@
+<!-- Modern Dashboard -->
+<div class="dashboard-page">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>Dashboard</h1>
+        <p *ngIf="currentUser">Üdvözlünk, {{ currentUser.name }}!</p>
+      </div>
+      <div class="header-right">
+        <button class="btn btn-outline" (click)="navigateTo('/cars')">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 12h16v8H8z" fill="white" opacity="0.9"/>
+            <circle cx="12" cy="20" r="2" fill="white"/>
+            <circle cx="20" cy="20" r="2" fill="white"/>
+          </svg>
+          Autók böngészése
+        </button>
+        <button class="btn btn-danger" (click)="logout()">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+          </svg>
+          Kijelentkezés
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-large"></div>
+    <p>Adatok betöltése...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <div class="error-message">
+      <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+      </svg>
+      {{ error }}
+    </div>
+    <button class="btn btn-primary" (click)="loadDashboardData()">Újrapróbálás</button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading && !error" class="dashboard-content">
+    
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-primary">
+          <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 12h16v8H8z" fill="white" opacity="0.9"/>
+            <circle cx="12" cy="20" r="2" fill="white"/>
+            <circle cx="20" cy="20" r="2" fill="white"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ stats.totalCars }}</div>
+          <div class="stat-label">Összes autó</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-success">
+          <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ stats.availableCars }}</div>
+          <div class="stat-label">Elérhető autók</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-warning">
+          <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ stats.activeRentals }}</div>
+          <div class="stat-label">Aktív bérlések</div>
+        </div>
+      </div>
+
+      <div class="stat-card" *ngIf="currentUser?.role === 'admin'">
+        <div class="stat-icon stat-icon-info">
+          <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ stats.totalUsers }}</div>
+          <div class="stat-label">Regisztrált felhasználók</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+      
+      <!-- Popular Cars -->
+      <div class="content-card">
+        <div class="card-header">
+          <h2>Népszerű autók</h2>
+          <button class="btn btn-sm btn-outline" (click)="navigateTo('/cars')">
+            Összes megtekintése
+          </button>
+        </div>
+        <div class="card-content">
+          <div *ngIf="popularCars.length === 0" class="empty-state">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 12h16v8H8z" fill="white" opacity="0.9"/>
+              <circle cx="12" cy="20" r="2" fill="white"/>
+              <circle cx="20" cy="20" r="2" fill="white"/>
+            </svg>
+            <p>Nincsenek elérhető autók</p>
+          </div>
+          <div class="cars-list" *ngIf="popularCars.length > 0">
+            <div class="car-item" *ngFor="let car of popularCars">
+              <div class="car-image">
+                <img [src]="car.image_url || '/assets/car-placeholder.jpg'" [alt]="car.name" />
+              </div>
+              <div class="car-info">
+                <h3>{{ car.name }}</h3>
+                <p>{{ car.category }} • {{ car.seats }} ülés</p>
+                <div class="car-meta">
+                  <span class="price">{{ formatPrice(car.price_per_day) }}/nap</span>
+                  <span class="badge" [class]="getStatusBadgeClass(car.status)">
+                    {{ getStatusText(car.status) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Rentals -->
+      <div class="content-card">
+        <div class="card-header">
+          <h2>Legutóbbi bérlések</h2>
+          <button class="btn btn-sm btn-outline" *ngIf="currentUser?.role === 'admin'" (click)="navigateTo('/admin')">
+            Admin panel
+          </button>
+        </div>
+        <div class="card-content">
+          <div *ngIf="recentRentals.length === 0" class="empty-state">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+            </svg>
+            <p>Nincsenek bérlések</p>
+          </div>
+          <div class="rentals-list" *ngIf="recentRentals.length > 0">
+            <div class="rental-item" *ngFor="let rental of recentRentals">
+              <div class="rental-info">
+                <h4>{{ rental.car?.name || 'Autó #' + rental.car_id }}</h4>
+                <p>{{ formatDate(rental.start_date) }} - {{ formatDate(rental.end_date) }}</p>
+                <div class="rental-meta">
+                  <span class="price">{{ formatPrice(rental.total_price) }}</span>
+                  <span class="badge" [class]="getStatusBadgeClass(rental.status)">
+                    {{ getStatusText(rental.status) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h2>Gyors műveletek</h2>
+      <div class="actions-grid">
+        <button class="action-card" (click)="openRentalModal()">
+          <div class="action-icon">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 12h16v8H8z" fill="white" opacity="0.9"/>
+              <circle cx="12" cy="20" r="2" fill="white"/>
+              <circle cx="20" cy="20" r="2" fill="white"/>
+            </svg>
+          </div>
+          <div class="action-content">
+            <h3>Új bérlés indítása</h3>
+            <p>Bérelj autót most</p>
+          </div>
+        </button>
+
+        <button class="action-card" (click)="navigateTo('/cars')">
+          <div class="action-icon">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 12h16v8H8z" fill="white" opacity="0.9"/>
+              <circle cx="12" cy="20" r="2" fill="white"/>
+              <circle cx="20" cy="20" r="2" fill="white"/>
+            </svg>
+          </div>
+          <div class="action-content">
+            <h3>Autók böngészése</h3>
+            <p>Tekintsd meg az elérhető járműveket</p>
+          </div>
+        </button>
+
+        <button class="action-card" *ngIf="currentUser?.role === 'admin'" (click)="navigateTo('/admin')">
+          <div class="action-icon">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+              <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+            </svg>
+          </div>
+          <div class="action-content">
+            <h3>Admin panel</h3>
+            <p>Rendszer kezelése és statisztikák</p>
+          </div>
+        </button>
+
+        <button class="action-card" (click)="loadDashboardData()">
+          <div class="action-icon">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+              <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+            </svg>
+          </div>
+          <div class="action-content">
+            <h3>Frissítés</h3>
+            <p>Adatok újratöltése</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Rental Modal -->
+<app-rental-modal 
+  [isOpen]="showRentalModal"
+  [preselectedCarId]="preselectedCarId"
+  [preselectedCarName]="preselectedCarName"
+  [preselectedCarPrice]="preselectedCarPrice"
+  (close)="closeRentalModal()"
+  (rentalCreated)="onRentalCreated()">
+</app-rental-modal>
