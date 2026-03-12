@@ -46,11 +46,15 @@
     </Window.Resources>
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="347*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
         <!-- Login panel -->
         <Grid x:Name="LoginPanel"
-              HorizontalAlignment="Center"
+              HorizontalAlignment="Left"
               VerticalAlignment="Center"
-              Margin="24">
+              Margin="502,0,0,0">
 
             <Border MaxWidth="460"
                     Padding="32"
@@ -100,7 +104,7 @@
         </Grid>
 
         <!-- Admin Panel -->
-        <Grid x:Name="AdminPanel" Visibility="Collapsed">
+        <Grid x:Name="AdminPanel" Visibility="Collapsed" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>

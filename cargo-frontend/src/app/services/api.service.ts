@@ -28,11 +28,16 @@ export interface Rental {
   id: number;
   car_id: number;
   user_id: number;
-  start_date: string;
-  end_date: string;
+  car_name: string;
+  car_price: string;
+  rental_date: string;
+  return_date: string;
+  customer_name: string;
+  customer_email: string;
+  total_days: number;
   total_price: number;
   status: string;
-  car?: Car;
+  created_at?: string;
 }
 
 export interface ContactMessage {
@@ -59,7 +64,7 @@ export class ApiService {
       console.log('Checking auth status, token:', token ? 'exists' : 'not found');
       
       if (token) {
-        // Használjunk setTimeout-ot, hogy elkerüljük az SSR problémákat
+        
         setTimeout(() => {
           const headers = { 'Authorization': `Bearer ${token}` };
           console.log('Calling /auth/me endpoint...');
@@ -131,13 +136,13 @@ export class ApiService {
       );
   }
 
-  // Cars methods
+
   getCars(): Observable<{success: boolean, cars: Car[]}> {
     const options = isPlatformBrowser(this.platformId) ? { withCredentials: true } : {};
     return this.http.get<{success: boolean, cars: Car[]}>(`${this.baseUrl}/cars`, options);
   }
 
-  // Rentals methods
+  
   getRentals(): Observable<{success: boolean, rentals: Rental[]}> {
     if (!isPlatformBrowser(this.platformId)) {
       return new Observable(observer => {
@@ -178,12 +183,11 @@ export class ApiService {
     });
   }
 
-  // Contact method
   sendContactMessage(message: ContactMessage): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/contact`, message);
   }
 
-  // Generic HTTP methods for admin
+ 
   get(url: string): Observable<any> {
     return this.http.get<any>(`http://localhost:5000${url}`, { withCredentials: true });
   }

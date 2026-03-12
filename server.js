@@ -1,10 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const path = require('path');
-const { getPool, initializeDatabase } = require('./utils/database');
+const { initializeDatabase } = require('./utils/database');
 
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
@@ -54,48 +53,9 @@ app.use(session({
     }
 }));
 
-// Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Serve logo.ico
-app.get('/logo.ico', (req, res) => {
-    res.sendFile(path.join(__dirname, 'logo.ico'));
-});
-
-// API routes
 app.use('/api', require('./routes'));
-
-// Serve HTML pages
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.get('/cars', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'cars.html'));
-});
-
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'register.html'));
-});
-
-app.get('/verify', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'verify.html'));
-});
-
-app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
-
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

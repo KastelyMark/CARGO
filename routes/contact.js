@@ -5,7 +5,6 @@ const { body, validationResult } = require('express-validator');
 
 const router = express.Router();
 
-// Submit contact form
 router.post('/', [
     body('name').isLength({ min: 2 }).withMessage('A névnek legalább 2 karakterből kell állnia'),
     body('email').isEmail().withMessage('Érvényes email szükséges'),
@@ -22,14 +21,16 @@ router.post('/', [
 
         const { name, email, message } = req.body;
 
-        // Save message to database
         await getPool().execute(
             'INSERT INTO messages (name, email, message, status) VALUES (?, ?, ?, ?)',
             [name, email, message, 'new']
         );
 
-        // Send notification email to admin
-        await sendContactNotification(name, email, message);
+        try {
+            await sendContactNotification(name, email, message);
+        } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+        }
 
         res.json({
             success: true,
@@ -45,7 +46,6 @@ router.post('/', [
     }
 });
 
-// Helper function to send contact notification email to admin
 async function sendContactNotification(name, email, message) {
     const subject = "Új kapcsolatfelvételi üzenet - CarGO";
     const htmlMessage = `

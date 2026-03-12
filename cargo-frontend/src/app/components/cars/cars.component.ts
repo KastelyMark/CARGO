@@ -37,7 +37,6 @@ export class CarsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Only load cars in browser
     if (isPlatformBrowser(this.platformId)) {
       this.loadCars();
     }
@@ -66,12 +65,10 @@ export class CarsComponent implements OnInit {
 
   applyFilters() {
     this.filteredCars = this.cars.filter(car => {
-      // Category filter
       if (this.filters.category && car.category !== this.filters.category) {
         return false;
       }
 
-      // Price filter
       if (this.filters.price) {
         const [min, max] = this.filters.price.split('-').map(Number);
         if (car.price_per_day < min || (max && car.price_per_day > max)) {
@@ -79,17 +76,14 @@ export class CarsComponent implements OnInit {
         }
       }
 
-      // Transmission filter
       if (this.filters.transmission && car.transmission !== this.filters.transmission) {
         return false;
       }
 
-      // Fuel filter
       if (this.filters.fuel && car.fuel_type !== this.filters.fuel) {
         return false;
       }
 
-      // Seats filter
       if (this.filters.seats && car.seats.toString() !== this.filters.seats) {
         return false;
       }
@@ -136,16 +130,10 @@ export class CarsComponent implements OnInit {
       return;
     }
 
-    // Check if user is logged in by checking the API service
     const currentUser = this.apiService.getCurrentUser();
     const token = localStorage.getItem('token');
     
-    console.log('Rental button clicked');
-    console.log('Current user:', currentUser);
-    console.log('Token exists:', !!token);
-    
     if (!currentUser || !token) {
-      // Save car info for after login
       sessionStorage.setItem('pendingRental', JSON.stringify({
         carId: car.id,
         carName: car.name,
@@ -160,8 +148,6 @@ export class CarsComponent implements OnInit {
       return;
     }
     
-    // User is logged in, redirect to dashboard with car info
-    console.log('User is logged in, redirecting to dashboard with car info');
     this.router.navigate(['/dashboard'], {
       queryParams: {
         carId: car.id,

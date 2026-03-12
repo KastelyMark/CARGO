@@ -31,7 +31,6 @@ export class DashboardComponent implements OnInit {
   isLoading = true;
   error = '';
   
-  // Rental modal
   showRentalModal = false;
   preselectedCarId?: number;
   preselectedCarName?: string;
@@ -45,20 +44,14 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('Dashboard component initializing...');
-    
     this.apiService.currentUser$.subscribe(user => {
-      console.log('Dashboard: Current user changed to', user);
       this.currentUser = user;
       
       if (!user && isPlatformBrowser(this.platformId)) {
-        console.log('Dashboard: No user found, redirecting to login');
         this.router.navigate(['/login']);
       } else if (user && isPlatformBrowser(this.platformId)) {
-        console.log('Dashboard: User found, loading dashboard data');
         this.loadDashboardData();
         
-        // Check for car preselection from URL
         this.route.queryParams.subscribe(params => {
           if (params['carId']) {
             this.preselectedCarId = parseInt(params['carId']);
@@ -72,11 +65,8 @@ export class DashboardComponent implements OnInit {
       }
     });
     
-    // Csak browser-ben töltjük be az adatokat
     if (isPlatformBrowser(this.platformId)) {
-      // Ellenőrizzük, hogy van-e már user
       const currentUser = this.apiService.getCurrentUser();
-      console.log('Dashboard: Initial current user check', currentUser);
       
       if (currentUser) {
         setTimeout(() => {
@@ -102,7 +92,6 @@ export class DashboardComponent implements OnInit {
   }
 
   async loadDashboardData() {
-    // Csak browser-ben futtatjuk
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
@@ -110,20 +99,18 @@ export class DashboardComponent implements OnInit {
     try {
       this.isLoading = true;
       
-      // Load cars
       const carsResponse = await this.apiService.getCars().toPromise();
       if (carsResponse?.success) {
         const cars = carsResponse.cars;
         this.stats.totalCars = cars.length;
         this.stats.availableCars = cars.filter(car => car.status === 'available').length;
-        this.popularCars = cars.slice(0, 3); // Top 3 cars
+        this.popularCars = cars.slice(0, 3);
       }
 
-      // Load rentals
       try {
         const rentalsResponse = await this.apiService.getRentals().toPromise();
         if (rentalsResponse?.success) {
-          this.recentRentals = rentalsResponse.rentals.slice(0, 5); // Last 5 rentals
+          this.recentRentals = rentalsResponse.rentals.slice(0, 5);
           this.stats.activeRentals = rentalsResponse.rentals.filter(rental => 
             rental.status === 'active' || rental.status === 'confirmed'
           ).length;
@@ -132,7 +119,6 @@ export class DashboardComponent implements OnInit {
         console.log('Could not load rentals:', rentalError);
       }
 
-      // Load admin stats if user is admin
       if (this.currentUser?.role === 'admin') {
         try {
           const adminStats = await this.apiService.get('/api/admin/stats').toPromise();
@@ -157,9 +143,7 @@ export class DashboardComponent implements OnInit {
       next: () => {
         this.router.navigate(['/login']);
       },
-      error: (error) => {
-        console.error('Logout error:', error);
-        // Force logout even if API call fails
+      error: () => {
         this.router.navigate(['/login']);
       }
     });
@@ -187,6 +171,8 @@ export class DashboardComponent implements OnInit {
       case 'rented': return 'Kiadva';
       case 'maintenance': return 'Karbantartás';
       case 'active': return 'Aktív';
+      case 'pending': return 'Függőben';
+      case 'confirmed': return 'Megerősítve';
       case 'completed': return 'Befejezett';
       case 'cancelled': return 'Törölve';
       default: return status;
@@ -194,7 +180,10 @@ export class DashboardComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('hu-HU');
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid Date';
+    return date.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
   formatPrice(price: number): string {

@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 
-// Database connection config
+
 const dbName = process.env.DB_NAME || 'cargo_database';
 const dbConfig = {
     host: process.env.DB_HOST || 'localhost',
@@ -12,7 +12,7 @@ const dbConfig = {
     queueLimit: 0
 };
 
-// Create database if it doesn't exist
+
 async function createDatabaseIfNotExists() {
     const tempConfig = {
         host: dbConfig.host,
@@ -33,15 +33,13 @@ async function createDatabaseIfNotExists() {
 
 let pool;
 
-// Initialize database
 async function initializeDatabase() {
     try {
         await createDatabaseIfNotExists();
         pool = mysql.createPool(dbConfig);
         
         const connection = await pool.getConnection();
-        
-        // Create tables
+
         await connection.execute(`
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -65,11 +63,10 @@ async function initializeDatabase() {
             )
         `);
 
-            // Ensure columns for password reset exist (add if missing)
             try {
                 await connection.execute(`ALTER TABLE users ADD COLUMN IF NOT EXISTS force_password_reset TINYINT(1) DEFAULT 0`);
             } catch (err) {
-                // older MySQL versions may not support IF NOT EXISTS; ignore errors
+               
                 try { await connection.execute(`ALTER TABLE users ADD COLUMN force_password_reset TINYINT(1) DEFAULT 0`); } catch(_) {}
             }
 
@@ -142,13 +139,13 @@ function getPool() {
     return pool;
 }
 
-// Populate cars table with 57 cars with REAL car images
+
 async function populateCarsTable(connection) {
     try {
         await connection.execute('DELETE FROM cars');
 
         const cars = [
-            // ECONOMY (10 cars) - Real car images
+            
             { name: 'Volkswagen Polo', description: 'Évjárat: 1996 Hengerűrtartalom: 1390cm³ Teljesítmény: 60 LE Csomagtartó: 245 liter', price_per_day: 2000, image_url: 'https://upload.wikimedia.org/wikipedia/commons/6/67/VW_Polo_front_20090329.jpg', category: 'Gazdaságos', transmission: 'manual', fuel_type: 'benzin', seats: 5 },
             { name: 'Peugeot 206', description: 'Évjárat: 2003 Hengerűrtartalom: 1360cm³ Teljesítmény: 75 LE Csomagtartó: 245 liter', price_per_day: 3000, image_url: 'https://upload.wikimedia.org/wikipedia/commons/2/21/2002_Peugeot_206_LX_1.4_Front.jpg', category: 'Gazdaságos', transmission: 'manual', fuel_type: 'benzin', seats: 5 },
             { name: 'Mini Cooper', description: 'Évjárat: 2002 Hengerűrtartalom: 1598cm³ Teljesítmény: 174 LE Csomagtartó: 350 liter', price_per_day: 2500, image_url: 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Mini_One_%28R50%29_%E2%80%93_Frontansicht%2C_12._Juni_2011%2C_D%C3%BCsseldorf.jpg', category: 'Gazdaságos', transmission: 'manual', fuel_type: 'benzin', seats: 4 },
@@ -156,7 +153,7 @@ async function populateCarsTable(connection) {
             { name: 'Seat Ibiza', description: 'Évjárat: 2005 Hengerűrtartalom: 1390cm³ Teljesítmény: 75 LE Csomagtartó: 267 liter', price_per_day: 2500, image_url: 'https://upload.wikimedia.org/wikipedia/commons/0/0d/Seat_Ibiza_3-door_silver.jpg', category: 'Gazdaságos', transmission: 'manual', fuel_type: 'benzin', seats: 5 },
             
             
-            // COMPACT (10 cars) - Real car images
+            
             { name: 'Volvo V40', description: 'Évjárat: 2014 Hengerűrtartalom: 1969cm³ Teljesítmény: 150 LE Csomagtartó: 335 liter', price_per_day: 10000, image_url: 'https://cdn.euroncap.com/media/6398/volvo_v40_2012_1uncrashed.jpg?mode=crop&width=359&height=235', category: 'kompakt', transmission: 'automatic', fuel_type: 'diesel', seats: 5 },
             { name: 'Toyota Corolla', description: 'Évjárat: 2019 Hengerűrtartalom: 1598cm³ Teljesítmény: 132 LE Csomagtartó: 471 liter', price_per_day: 8000, image_url: 'https://www.autoaddikt.hu/kepek/2024-toyota-corolla-le-usa-florida-teszt-autoaddikt-20.jpg', category: 'kompakt', transmission: 'automatic', fuel_type: 'benzin', seats: 5 },
             { name: 'Volkswagen Golf 6', description: 'Évjárat: 2012 Hengerűrtartalom: 1598cm³ Teljesítmény: 105 LE Csomagtartó: 350 liter', price_per_day: 4000, image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/VW_Golf_1.6_TDI_Style_%28VI%29_%E2%80%93_Frontansicht%2C_25._Februar_2012%2C_Ratingen.jpg/1200px-VW_Golf_1.6_TDI_Style_%28VI%29_%E2%80%93_Frontansicht%2C_25._Februar_2012%2C_Ratingen.jpg', category: 'kompakt', transmission: 'manual', fuel_type: 'diesel', seats: 5 },
@@ -164,7 +161,7 @@ async function populateCarsTable(connection) {
             { name: 'Ford Focus', description: 'Évjárat: 2012 Hengerűrtartalom: 1560cm³ Teljesítmény: 116 LE Csomagtartó: 476 liter', price_per_day: 4500, image_url: 'https://img.hasznaltautocdn.com/640x480/22465397/18652603.jpg', category: 'kompakt', transmission: 'manual', fuel_type: 'diesel', seats: 5 },
             { name: 'Kia Ceed', description: 'Évjárat: 2019 Hengerűrtartalom: 1353cm³ Teljesítmény: 140 LE Csomagtartó: 395 liter', price_per_day: 6000, image_url: 'https://kocsi-media.hu/1105/kia-ceed-ceed-sw-1-5-t-gdi-gold-361195_571403_1xl.jpg', category: 'kompakt', transmission: 'manual', fuel_type: 'benzin', seats: 5 },
             
-            // MIDSIZE (10 cars) - Real car images
+          
             { name: 'Mercedes C-Class', description: 'Évjárat: 2024 Hengerűrtartalom: 1496cm³ Teljesítmény: 170 LE Csomagtartó: 455 liter', price_per_day: 30000, image_url: 'https://www.iihs.org/cdn-cgi/image/width=636/api/ratings/model-year-images/3261/', category: 'Középkategória', transmission: 'automatic', fuel_type: 'benzin', seats: 5 },
             { name: 'Volkswagen Passat', description: 'Évjárat: 2016 Hengerűrtartalom: 1968cm³ Teljesítmény: 150 LE Csomagtartó: 586 liter', price_per_day: 12000, image_url: 'https://upload.wikimedia.org/wikipedia/commons/9/91/VW_Passat_B8_Limousine_2.0_TDI_Highline.JPG', category: 'Középkategória', transmission: 'automatic', fuel_type: 'diesel', seats: 5 },
             { name: 'Skoda Octavia', description: 'Évjárat: 2016 Hengerűrtartalom: 1968cm³ Teljesítmény: 150 LE Csomagtartó: 610 liter', price_per_day: 10000, image_url: 'https://img.jofogas.hu/620x620aspect/Skoda_Octavia_Combi_1_6_CR_TDI_Style_DSG_278192716805168.jpg', category: 'Középkategória', transmission: 'manual', fuel_type: 'diesel', seats: 5 },
@@ -172,18 +169,18 @@ async function populateCarsTable(connection) {
             { name: 'Lexus IS', description: 'Évjárat: 2006 Hengerűrtartalom: 2231cm³ Teljesítmény: 177 LE Csomagtartó: 378 liter', price_per_day: 7000, image_url: 'https://img.jofogas.hu/620x620aspect/Lexus_Is_220d_Sport_185582716768484.jpg', category: 'Középkategória', transmission: 'automatic', fuel_type: 'petrol', seats: 5 },
             { name: 'Volvo S60', description: 'Évjárat: 2023 Hengerűrtartalom: 1969cm³ Teljesítmény: 250 LE Csomagtartó: 427 liter', price_per_day: 28000, image_url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcRxYay1CYgG8aHLsmqDC1gDRq_o4NvKGjKA&s', category: 'Középkategória', transmission: 'automatic', fuel_type: 'benzin', seats: 5 },
 
-            // LUXURY (10 cars) - Real car images
+          
             { name: 'Audi A8', description: 'Évjárat: 2011 Hengerűrtartalom: 6299cm³ Teljesítmény: 500 LE Csomagtartó: 510 liter', price_per_day: 80000, image_url: 'https://media.carsandbids.com/cdn-cgi/image/width=2080,quality=70/d9b636c2ec84ddc3bc7f2eb32861b39bdd5f9683/photos/KVVdj8NY-yKNHf0J5sU-(edit).jpg?t=171242254321', category: 'luxus', transmission: 'automatic', fuel_type: 'benzin', seats: 4 },
             { name: 'BMW 750i', description: 'Évjárat: 2018 Hengerűrtartalom: 4395cm³ Teljesítmény: 449 LE Csomagtartó: 515 liter', price_per_day: 75000, image_url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlzmPqoZErEqk01A6DVNvc_6awbpo2PRCtOw&s', category: 'luxus', transmission: 'automatic', fuel_type: 'benzin', seats: 4 },
             { name: 'Mercedes S-Class', description: 'Évjárat: 2015 Hengerűrtartalom: 4663cm³ Teljesítmény: 455 LE Csomagtartó: 530 liter', price_per_day: 80000, image_url: 'https://www.cnet.com/a/img/resize/5461c499ae8f28a8db50d3ed00e28d8ae33884e9/hub/2015/08/05/bb958551-4dc4-4101-8df5-e36c0538e7bd/2015mercedes-benzs550hybrid-005.jpg?auto=webp&width=768', category: 'luxus', transmission: 'automatic', fuel_type: 'benzin', seats: 4 },
 
-            // SUV (10 cars) - Real car images
+           
             { name: 'Ford Kuga', description: 'Évjárat: 2012 Hengerűrtartalom: 2521cm³ Teljesítmény: 200 LE Csomagtartó: 410 liter', price_per_day: 18000, image_url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhyZCmxpWr91g5RIC7t29sUuzO7EVxoaXwDw&s', category: 'suv', transmission: 'automatic', fuel_type: 'benzin', seats: 5 },
             { name: 'Hyundai Tucson', description: 'Évjárat: 2021 Hengerűrtartalom: 1598cm³ Teljesítmény: 136 LE Csomagtartó: 513 liter', price_per_day: 20000, image_url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTodrV_fE69_7WsZvep9oMNJ7awChgg9LqO4Q&s', category: 'suv', transmission: 'automatic', fuel_type: 'diesel', seats: 5 },
             { name: 'Kia Sportage', description: 'Évjárat: 2015 Hengerűrtartalom: 1995cm³ Teljesítmény: 184 LE Csomagtartó: 564 liter', price_per_day: 11000, image_url: 'https://img.jofogas.hu/620x620aspect/KIA_Sportage_1_7_CRDi_EX_Limited_Szervizkonyves____184492726725075.jpg', category: 'suv', transmission: 'automatic', fuel_type: 'diesel', seats: 5 },
             { name: 'Volkswagen Touareg', description: 'Évjárat: 2018 Hengerűrtartalom: 2967cm³ Teljesítmény: 286 LE Csomagtartó: 810 liter', price_per_day: 45000, image_url: 'https://cdn.joautok.hu/prod/postings/images/bdc9228f-1f24-4f8a-bb8e-32feba5d38be_0c959853ab745ca2406a5074061b036c7677999760d3a9e278912ead55f2df32.jpg', category: 'suv', transmission: 'automatic', fuel_type: 'diesel', seats: 7 },
 
-            // SPORTS (10 cars) - Real car images
+            
             { name: 'Porsche 718 Cayman', description: 'Évjárat: 2013 Hengerűrtartalom: 2706cm³ Teljesítmény: 275 LE Csomagtartó: 425 liter', price_per_day: 85000, image_url: 'https://supercarsdrive.hu/cdn/shop/files/PorscheCayman__elmenyvezetes_berles_web_15_1_a04585c6-2f9b-4950-bf5a-8ece2bdb1657.png?v=1727514184&width=1445', category: 'sports', transmission: 'manual', fuel_type: 'benzin', seats: 2 },
             { name: 'BMW M4', description: 'Évjárat: 2022 Hengerűrtartalom: 2993cm³ Teljesítmény: 510 LE Csomagtartó: 440 liter', price_per_day: 90000, image_url: 'https://images.prismic.io/exclusiveresorts/521030be-64d1-4525-a2d0-1fbab564218f_BMW+M4+001_ut2z6l-FullBleed_2880x1620.jpg?auto=compress,format&w=2560&q=70', category: 'sports', transmission: 'manual', fuel_type: 'benzin', seats: 4 },
             { name: 'Audi TT RS', description: 'Évjárat: 2009 Hengerűrtartalom: 2480cm³ Teljesítmény: 340 LE Csomagtartó: 290 liter', price_per_day: 60000, image_url: 'https://www.edmunds.com/assets/m/audi/tt-rs/2012/oem/2012_audi_tt-rs_coupe_quattro_fq_oem_1_600.jpg', category: 'sports', transmission: 'automatic', fuel_type: 'benzin', seats: 2 },

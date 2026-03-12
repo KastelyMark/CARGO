@@ -9,10 +9,10 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Simple admin authentication (in production, use proper authentication)
+
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
-// Admin login
+
 router.post('/login', [
     body('password').notEmpty().withMessage('Jelszó szükséges')
 ], async (req, res) => {
@@ -49,7 +49,7 @@ router.post('/login', [
     }
 });
 
-// Admin logout
+
 router.post('/logout', (req, res) => {
     req.session.adminLoggedIn = false;
     res.json({
@@ -58,14 +58,12 @@ router.post('/logout', (req, res) => {
     });
 });
 
-// Check admin status
 router.get('/status', (req, res) => {
     res.json({
         logged_in: !!req.session.adminLoggedIn
     });
 });
 
-// Middleware to check admin authentication
 const requireAdmin = (req, res, next) => {
     if (!req.session.adminLoggedIn) {
         return res.status(401).json({
@@ -76,7 +74,7 @@ const requireAdmin = (req, res, next) => {
     next();
 };
 
-// Multer setup for image uploads
+
 const uploadDir = path.join(__dirname, '..', 'uploads', 'cars');
 fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -98,14 +96,14 @@ const imageFilter = (req, file, cb) => {
 
 const upload = multer({ storage, fileFilter: imageFilter, limits: { fileSize: 5 * 1024 * 1024 } });
 
-// Create a new car (with image)
+
 router.post('/cars', requireAdmin, upload.single('image'), async (req, res) => {
     try {
         const { name, description, price_per_day, category, transmission, fuel_type, seats } = req.body;
         let imageUrl = null;
 
         if (req.file) {
-            // Expose via /uploads/cars/filename
+           
             imageUrl = `/uploads/cars/${req.file.filename}`;
         }
 
@@ -123,7 +121,7 @@ router.post('/cars', requireAdmin, upload.single('image'), async (req, res) => {
     }
 });
 
-// Delete car and its image
+
 router.delete('/cars/:id', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
@@ -135,10 +133,9 @@ router.delete('/cars/:id', requireAdmin, async (req, res) => {
 
         const imageUrl = rows[0].image_url;
 
-        // Delete DB row
         await getPool().execute('DELETE FROM cars WHERE id = ?', [id]);
 
-        // Remove image file if stored locally
+      
         if (imageUrl && imageUrl.startsWith('/uploads/')) {
             const filePath = path.join(__dirname, '..', imageUrl.replace('/uploads/', 'uploads/'));
             fs.unlink(filePath, (err) => {
@@ -153,7 +150,7 @@ router.delete('/cars/:id', requireAdmin, async (req, res) => {
     }
 });
 
-// Get single car by id
+
 router.get('/cars/:id', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
@@ -168,13 +165,13 @@ router.get('/cars/:id', requireAdmin, async (req, res) => {
     }
 });
 
-// Update car (optionally with new image)
+
 router.put('/cars/:id', requireAdmin, upload.single('image'), async (req, res) => {
     try {
         const { id } = req.params;
         const { name, description, price_per_day, category, transmission, fuel_type, seats } = req.body;
 
-        // Fetch current image to optionally delete if replaced
+    
         const [existingRows] = await getPool().execute('SELECT image_url FROM cars WHERE id = ?', [id]);
         if (existingRows.length === 0) {
             return res.status(404).json({ success: false, message: 'Car not found' });
@@ -199,7 +196,7 @@ router.put('/cars/:id', requireAdmin, upload.single('image'), async (req, res) =
         addField('fuel_type', fuel_type);
         addField('seats', seats);
 
-        // Handle image replacement
+        
         if (req.file) {
             const newImageUrl = `/uploads/cars/${req.file.filename}`;
             addField('image_url', newImageUrl);
@@ -212,7 +209,7 @@ router.put('/cars/:id', requireAdmin, upload.single('image'), async (req, res) =
         params.push(id);
         await getPool().execute(`UPDATE cars SET ${fields.join(', ')} WHERE id = ?`, params);
 
-        // If image was replaced, delete old file
+       
         if (req.file && currentImageUrl && currentImageUrl.startsWith('/uploads/')) {
             const oldPath = path.join(__dirname, '..', currentImageUrl.replace('/uploads/', 'uploads/'));
             fs.unlink(oldPath, (err) => {
@@ -227,28 +224,25 @@ router.put('/cars/:id', requireAdmin, upload.single('image'), async (req, res) =
     }
 });
 
-// Get statistics
+
 router.get('/stats', requireAdmin, async (req, res) => {
     try {
-        // Total users
+     
         const [usersResult] = await getPool().execute('SELECT COUNT(*) as total FROM users');
         
-        // Registered (verified) users
+       
         const [registeredUsersResult] = await getPool().execute('SELECT COUNT(*) as total FROM users WHERE is_verified = 1');
         
-        // Total messages
+      
         const [messagesResult] = await getPool().execute('SELECT COUNT(*) as total FROM messages');
         
-        // New messages (only status = 'new')
         const [newMessagesResult] = await getPool().execute('SELECT COUNT(*) as total FROM messages WHERE status = "new"');
-        
-        // Total rentals
+      
         const [rentalsResult] = await getPool().execute('SELECT COUNT(*) as total FROM rentals');
-        
-        // Pending rentals
+    
         const [pendingRentalsResult] = await getPool().execute('SELECT COUNT(*) as total FROM rentals WHERE status = "pending"');
         
-        // Total cars
+     
         const [carsResult] = await getPool().execute('SELECT COUNT(*) as total FROM cars');
 
         res.json({
@@ -294,10 +288,7 @@ router.get('/messages', requireAdmin, async (req, res) => {
     }
 });
 
-// Get recent users with optional status filter
-// Query params:
-//   status=registered|unverified|all  (registered => is_verified=1, unverified => is_verified=0)
-//   all=1                             (if provided, returns all users instead of a limited set)
+
 router.get('/users', requireAdmin, async (req, res) => {
     try {
         const { all, status } = req.query;
@@ -332,7 +323,6 @@ router.get('/users', requireAdmin, async (req, res) => {
     }
 });
 
-// Update user by id
 router.put('/users/:id', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
@@ -340,14 +330,12 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
         const fields = [];
         const params = [];
 
-        // Handle password separately if provided
         if (req.body.password && req.body.password.trim() !== '') {
             const hashedPassword = await bcrypt.hash(req.body.password, 12);
             fields.push('password = ?');
             params.push(hashedPassword);
         }
 
-        // Handle other fields
         for (const key of allowed) {
             if (Object.prototype.hasOwnProperty.call(req.body, key)) {
                 fields.push(`${key} = ?`);
@@ -370,7 +358,6 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
     }
 });
 
-// Delete user by id
 router.delete('/users/:id', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
@@ -382,7 +369,6 @@ router.delete('/users/:id', requireAdmin, async (req, res) => {
     }
 });
 
-// Get single user by id
 router.get('/users/:id', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
@@ -395,7 +381,6 @@ router.get('/users/:id', requireAdmin, async (req, res) => {
     }
 });
 
-// Get recent rentals
 router.get('/rentals', requireAdmin, async (req, res) => {
     try {
         const [rentals] = await getPool().execute(
@@ -416,7 +401,6 @@ router.get('/rentals', requireAdmin, async (req, res) => {
     }
 });
 
-// Update message status
 router.put('/messages/:id/status', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
@@ -441,7 +425,6 @@ router.put('/messages/:id/status', requireAdmin, async (req, res) => {
     }
 });
 
-// Delete message
 router.delete('/messages/:id', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
@@ -462,7 +445,6 @@ router.delete('/messages/:id', requireAdmin, async (req, res) => {
     }
 });
 
-// Update rental status
 router.put('/rentals/:id/status', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
@@ -487,7 +469,6 @@ router.put('/rentals/:id/status', requireAdmin, async (req, res) => {
     }
 });
 
-// Delete rental
 router.delete('/rentals/:id', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
@@ -508,7 +489,6 @@ router.delete('/rentals/:id', requireAdmin, async (req, res) => {
     }
 });
 
-// Send email
 router.post('/send-email', requireAdmin, [
     body('toEmail').isEmail().withMessage('Érvényes email szükséges'),
     body('toName').notEmpty().withMessage('Név szükséges'),

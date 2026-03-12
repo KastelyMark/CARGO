@@ -40,14 +40,12 @@ export class RentalModalComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.setMinDates();
       
-      // Pre-fill user data
       const currentUser = this.apiService.getCurrentUser();
       if (currentUser) {
         this.customerName = currentUser.name;
         this.customerEmail = currentUser.email;
       }
       
-      // Load preselected car
       if (this.preselectedCarId) {
         this.loadSelectedCar();
       }
@@ -119,9 +117,6 @@ export class RentalModalComponent implements OnInit {
         customerEmail: this.customerEmail
       };
 
-      console.log('Sending rental data:', rentalData);
-      console.log('Selected car:', this.selectedCar);
-
       const response = await this.apiService.createRental(rentalData).toPromise();
 
       if (response && response.success) {
@@ -132,7 +127,6 @@ export class RentalModalComponent implements OnInit {
         this.error = response.message || 'Hiba történt a bérlés létrehozása során.';
       }
     } catch (error: any) {
-      console.error('Rental creation error:', error);
       this.error = error.error?.message || 'Hiba történt a bérlés létrehozása során.';
     } finally {
       this.isLoading = false;

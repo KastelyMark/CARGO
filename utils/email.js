@@ -1,8 +1,7 @@
 const nodemailer = require('nodemailer');
 
-// ============================================
 // EMAIL KONFIGURÁCIÓ - RACKHOST SMTP
-// ============================================
+
 const EMAIL_CONFIG = {
     // Rackhost SMTP beállítások
     SMTP_HOST: 'smtp.rackhost.hu',
@@ -12,18 +11,18 @@ const EMAIL_CONFIG = {
     SMTP_PASS: 'cargo2026'
 };
 
-// Utility functions for email
+
 const generateVerificationCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-// Create SMTP transporter
+
 const createTransporter = () => {
     // Rackhost SMTP konfiguráció (valódi email küldéshez)
     const transporter = nodemailer.createTransport({
         host: EMAIL_CONFIG.SMTP_HOST,
         port: EMAIL_CONFIG.SMTP_PORT,
-        secure: EMAIL_CONFIG.SMTP_SECURE, // true for 465, false for 587
+        secure: EMAIL_CONFIG.SMTP_SECURE,
         auth: {
             user: process.env.SMTP_USER || EMAIL_CONFIG.SMTP_USER,
             pass: process.env.SMTP_PASS || EMAIL_CONFIG.SMTP_PASS
@@ -36,7 +35,7 @@ const createTransporter = () => {
     return transporter;
 };
 
-// Fallback transporter (ha nincs SMTP konfigurálva)
+
 const createFallbackTransporter = () => {
     return {
         sendMail: async (options) => {
@@ -164,7 +163,7 @@ const sendTemporaryPasswordEmail = async (email, name, tempPassword) => {
         return true;
     } catch (err) {
         console.error('sendTemporaryPasswordEmail error:', err);
-        // fallback log
+        
         console.log(`Temporary password for ${email}: ${tempPassword}`);
         return false;
     }
@@ -172,7 +171,7 @@ const sendTemporaryPasswordEmail = async (email, name, tempPassword) => {
 
 const sendEmail = async (to, subject, message) => {
     try {
-        // Rackhost SMTP szerver használata
+        
         const transporter = createTransporter();
         
         const mailOptions = {

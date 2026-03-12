@@ -33,27 +33,17 @@ export class LoginComponent {
     this.isSubmitting = true;
     
     try {
-      console.log('Attempting login with:', this.credentials.email);
-      
       this.apiService.login(this.credentials).subscribe({
         next: (response) => {
-          console.log('Login response:', response);
-          
           if (response && response.success) {
             this.showSuccessMessage('Sikeres bejelentkezés!');
             
-            // Várjunk egy kicsit, hogy a token beállítódjon és a currentUser$ frissüljön
             setTimeout(() => {
-              console.log('Current user after login:', this.apiService.getCurrentUser());
-              console.log('Token in localStorage:', localStorage.getItem('token'));
-              
-              // Check for pending rental
               const pendingRental = sessionStorage.getItem('pendingRental');
               if (pendingRental) {
                 try {
                   const rental = JSON.parse(pendingRental);
                   sessionStorage.removeItem('pendingRental');
-                  console.log('Redirecting to dashboard with pending rental:', rental);
                   this.router.navigate(['/dashboard'], {
                     queryParams: {
                       carId: rental.carId,
@@ -62,11 +52,9 @@ export class LoginComponent {
                     }
                   });
                 } catch (e) {
-                  console.error('Error parsing pending rental:', e);
                   this.router.navigate(['/dashboard']);
                 }
               } else {
-                console.log('Redirecting to dashboard...');
                 this.router.navigate(['/dashboard']);
               }
             }, 1000);
@@ -76,9 +64,6 @@ export class LoginComponent {
           this.isSubmitting = false;
         },
         error: (error: any) => {
-          console.error('Login error:', error);
-          
-          // Részletesebb hibaüzenet
           let errorMessage = 'Hiba történt a bejelentkezés során.';
           if (error.error?.message) {
             errorMessage = error.error.message;
@@ -92,7 +77,6 @@ export class LoginComponent {
       });
       
     } catch (error: any) {
-      console.error('Login error:', error);
       this.showErrorMessage('Hiba történt a bejelentkezés során.');
       this.isSubmitting = false;
     }

@@ -2,7 +2,7 @@ async function testAuth() {
     try {
         console.log('Testing authentication flow...');
         
-        // Test login
+        
         const loginResponse = await fetch('http://localhost:5000/api/auth/login', {
             method: 'POST',
             headers: {
@@ -21,7 +21,7 @@ async function testAuth() {
             const token = loginData.token;
             console.log('Token received:', token);
             
-            // Test /auth/me endpoint
+          
             const meResponse = await fetch('http://localhost:5000/api/auth/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`

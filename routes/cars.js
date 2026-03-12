@@ -2,16 +2,14 @@ const express = require('express');
 const { getPool } = require('../utils/database');
 const router = express.Router();
 
-// Get all cars with optional filtering
+
 router.get('/', async (req, res) => {
     try {
     const { category, min_price, max_price, transmission, fuel_type, min_seats, max_seats, admin } = req.query;
 
-    // if admin=1 is passed, return all cars; otherwise only available
     let query = admin === '1' ? 'SELECT * FROM cars' : 'SELECT * FROM cars WHERE is_available = TRUE';
         const params = [];
         
-        // Add filters based on query parameters
         if (category) {
             query += ' AND category = ?';
             params.push(category);
@@ -51,7 +49,6 @@ router.get('/', async (req, res) => {
 
         const [cars] = await getPool().execute(query, params);
 
-        // Parse features JSON for each car
         const carsWithParsedFeatures = cars.map(car => ({
             ...car,
             features: JSON.parse(car.features || '[]'),
@@ -72,7 +69,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get car by ID
 router.get('/:id', async (req, res) => {
     try {
         const carId = req.params.id;

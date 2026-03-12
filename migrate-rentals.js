@@ -1,4 +1,4 @@
-// Migration script to add total_days and total_price to existing rentals
+
 const { getPool, initializeDatabase } = require('./utils/database');
 
 async function migrateRentals() {
@@ -7,8 +7,7 @@ async function migrateRentals() {
         
         await initializeDatabase();
         const pool = getPool();
-        
-        // Check if columns exist, if not add them
+    
         try {
             await pool.execute(`
                 ALTER TABLE rentals 
@@ -17,7 +16,7 @@ async function migrateRentals() {
             `);
             console.log('✓ Columns added successfully');
         } catch (error) {
-            // Try alternative syntax for older MySQL versions
+ 
             try {
                 await pool.execute(`ALTER TABLE rentals ADD COLUMN total_days INT NOT NULL DEFAULT 1`);
             } catch (e) {
@@ -31,7 +30,7 @@ async function migrateRentals() {
             }
         }
         
-        // Update existing rentals with calculated values
+    
         const [rentals] = await pool.execute('SELECT * FROM rentals WHERE total_days = 0 OR total_price = 0');
         
         console.log(`Found ${rentals.length} rentals to update`);
@@ -42,7 +41,7 @@ async function migrateRentals() {
             const diffTime = returnDate - rentalDate;
             const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
-            // Extract numeric price from car_price string
+          
             const priceMatch = rental.car_price.match(/[\d,]+/);
             const pricePerDay = priceMatch ? parseFloat(priceMatch[0].replace(/,/g, '')) : 0;
             const totalPrice = totalDays * pricePerDay;

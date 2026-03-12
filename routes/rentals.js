@@ -1,29 +1,24 @@
 const express = require('express');
 const { getPool } = require('../utils/database');
-const { sendEmail, sendRentalConfirmationEmail, sendRentalNotificationEmail } = require('../utils/email');
+const { sendRentalConfirmationEmail, sendRentalNotificationEmail } = require('../utils/email');
 const { body, validationResult } = require('express-validator');
 
 const router = express.Router();
 
-// Middleware to check if user is logged in (supports both session and token)
 const requireAuth = async (req, res, next) => {
-    // Check session first
     if (req.session.userId) {
         req.userId = req.session.userId;
         return next();
     }
     
-    // Check token
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.substring(7);
         
         try {
-            // Decode the simple token
             const decoded = Buffer.from(token, 'base64').toString();
             const [userId, email] = decoded.split(':');
             
-            // Verify user exists
             const [users] = await getPool().execute(
                 'SELECT id FROM users WHERE id = ? AND email = ?',
                 [userId, email]
@@ -44,7 +39,6 @@ const requireAuth = async (req, res, next) => {
     });
 };
 
-// Create rental
 router.post('/', requireAuth, [
     body('carId').isInt().withMessage('Érvényes autó azonosító szükséges'),
     body('carName').notEmpty().withMessage('Az autó neve kötelező'),
@@ -65,11 +59,6 @@ router.post('/', requireAuth, [
 
         const { carId, carName, carPrice, rentalDate, returnDate, customerName, customerEmail } = req.body;
 
-        console.log('Received rental request:');
-        console.log('carId:', carId, 'type:', typeof carId);
-        console.log('Full body:', req.body);
-
-        // Validate dates
         const rental = new Date(rentalDate);
         const returnD = new Date(returnDate);
         const today = new Date();
@@ -89,20 +78,15 @@ router.post('/', requireAuth, [
             });
         }
 
-        // Calculate rental days and total price
         const totalDays = Math.ceil((returnD - rental) / (1000 * 60 * 60 * 24));
         const totalPrice = totalDays * parseFloat(carPrice);
 
-        // Create rental
-        const [result] = await getPool().execute(
+        await getPool().execute(
             'INSERT INTO rentals (user_id, car_id, car_name, car_price, rental_date, return_date, customer_name, customer_email, total_days, total_price, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [req.userId, carId, carName, carPrice, rentalDate, returnDate, customerName, customerEmail, totalDays, totalPrice, 'pending']
         );
 
-        // Send confirmation email to customer with enhanced design
         await sendRentalConfirmationEmail(customerEmail, customerName, carName, carPrice, rentalDate, returnDate, totalDays, totalPrice);
-
-        // Send notification email to admin with enhanced design
         await sendRentalNotificationEmail(customerName, customerEmail, carName, carPrice, rentalDate, returnDate, totalDays, totalPrice);
 
         res.json({
@@ -123,7 +107,6 @@ router.post('/', requireAuth, [
     }
 });
 
-// Get user rentals
 router.get('/', requireAuth, async (req, res) => {
     try {
         const [rentals] = await getPool().execute(
@@ -131,9 +114,16 @@ router.get('/', requireAuth, async (req, res) => {
             [req.userId]
         );
 
+        const formattedRentals = rentals.map(rental => ({
+            ...rental,
+            rental_date: rental.rental_date ? new Date(rental.rental_date).toISOString().split('T')[0] : null,
+            return_date: rental.return_date ? new Date(rental.return_date).toISOString().split('T')[0] : null,
+            total_price: parseFloat(rental.total_price)
+        }));
+
         res.json({
             success: true,
-            rentals: rentals
+            rentals: formattedRentals
         });
 
     } catch (error) {

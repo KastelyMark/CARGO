@@ -160,8 +160,8 @@
           <div class="rentals-list" *ngIf="recentRentals.length > 0">
             <div class="rental-item" *ngFor="let rental of recentRentals">
               <div class="rental-info">
-                <h4>{{ rental.car?.name || 'Autó #' + rental.car_id }}</h4>
-                <p>{{ formatDate(rental.start_date) }} - {{ formatDate(rental.end_date) }}</p>
+                <h4>{{ rental.car_name || 'Autó #' + rental.car_id }}</h4>
+                <p>{{ formatDate(rental.rental_date) }} - {{ formatDate(rental.return_date) }}</p>
                 <div class="rental-meta">
                   <span class="price">{{ formatPrice(rental.total_price) }}</span>
                   <span class="badge" [class]="getStatusBadgeClass(rental.status)">
