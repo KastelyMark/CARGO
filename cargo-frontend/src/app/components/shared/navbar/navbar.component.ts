@@ -77,6 +77,23 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.closeMenu();
   }
 
+  scrollToSection(sectionId: string) {
+    this.closeMenu();
+    if (this.router.url.startsWith('/home')) {
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      this.router.navigate(['/home']).then(() => {
+        setTimeout(() => {
+          const el = document.getElementById(sectionId);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      });
+    }
+  }
+
   async logout() {
     try {
       await this.apiService.logout().toPromise();

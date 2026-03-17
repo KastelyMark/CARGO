@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const path = require('path');
@@ -9,6 +10,8 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(cors({
     origin: function (origin, callback) {
