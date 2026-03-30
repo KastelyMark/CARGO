@@ -66,8 +66,33 @@
 
         <!-- Forgot Password Link -->
         <div class="form-options">
-          <button type="button" class="forgot-password-link">
+          <button type="button" class="forgot-password-link" (click)="toggleForgotForm()">
             Elfelejtett jelszó?
+          </button>
+        </div>
+
+        <!-- Forgot Password Form -->
+        <div class="forgot-password-form" *ngIf="showForgotForm">
+          <div class="form-group">
+            <label for="forgotEmail" class="form-label">Email cím a jelszó visszaállításhoz</label>
+            <input
+              type="email"
+              id="forgotEmail"
+              name="forgotEmail"
+              class="form-control"
+              [(ngModel)]="forgotEmail"
+              placeholder="pelda&#64;email.com"
+              autocomplete="email"
+            >
+          </div>
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg auth-submit"
+            [disabled]="!forgotEmail || isForgotSubmitting"
+            (click)="onForgotPassword()"
+          >
+            <span *ngIf="isForgotSubmitting" class="spinner"></span>
+            {{ isForgotSubmitting ? 'Küldés...' : 'Ideiglenes jelszó küldése' }}
           </button>
         </div>
 

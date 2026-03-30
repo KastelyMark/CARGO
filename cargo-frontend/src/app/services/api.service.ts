@@ -1,8 +1,9 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+﻿import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 
 export interface User {
   id: number;
@@ -50,66 +51,50 @@ export interface ContactMessage {
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:5000/api';
+  readonly baseUrl = 'http://localhost:5000/api';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     this.checkAuthStatus();
   }
 
-  private checkAuthStatus() {
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('token');
-      console.log('Checking auth status, token:', token ? 'exists' : 'not found');
-      
-      if (token) {
-        
-        setTimeout(() => {
-          const headers = { 'Authorization': `Bearer ${token}` };
-          console.log('Calling /auth/me endpoint...');
-          
-          this.http.get<{success: boolean, user: User}>(`${this.baseUrl}/auth/me`, { headers })
-            .subscribe({
-              next: (response) => {
-                console.log('/auth/me response:', response);
-                if (response.success) {
-                  this.currentUserSubject.next(response.user);
-                  console.log('User authenticated:', response.user);
-                } else {
-                  console.log('Auth failed, removing token');
-                  localStorage.removeItem('token');
-                  this.currentUserSubject.next(null);
-                }
-              },
-              error: (error) => {
-                console.error('/auth/me error:', error);
-                localStorage.removeItem('token');
-                this.currentUserSubject.next(null);
-              }
-            });
-        }, 100);
-      }
-    }
+  private checkAuthStatus(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    this.http.get<{ success: boolean; user: User }>(`${this.baseUrl}/auth/me`)
+      .pipe(
+        catchError(() => {
+          localStorage.removeItem('token');
+          this.currentUserSubject.next(null);
+          return of(null);
+        })
+      )
+      .subscribe(response => {
+        if (response?.success) {
+          this.currentUserSubject.next(response.user);
+        } else {
+          localStorage.removeItem('token');
+          this.currentUserSubject.next(null);
+        }
+      });
   }
 
-  // Auth methods
-  login(credentials: {email: string, password: string}): Observable<any> {
-    console.log('API Service: Attempting login for', credentials.email);
-    
-    return this.http.post<any>(`${this.baseUrl}/auth/login`, credentials)
-      .pipe(
-        tap(response => {
-          console.log('API Service: Login response received', response);
-          
-          if (response.success && response.token && isPlatformBrowser(this.platformId)) {
-            console.log('API Service: Storing token and user data');
-            localStorage.setItem('token', response.token);
-            this.currentUserSubject.next(response.user);
-            console.log('API Service: Current user set to', response.user);
-          }
-        })
-      );
+  login(credentials: { email: string; password: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/auth/login`, credentials).pipe(
+      tap(response => {
+        if (response?.success && response.token && isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('token', response.token);
+          this.currentUserSubject.next(response.user);
+        }
+      })
+    );
   }
 
   register(userData: any): Observable<any> {
@@ -120,91 +105,76 @@ export class ApiService {
     return this.http.post<any>(`${this.baseUrl}/auth/verify`, { code });
   }
 
-  forceVerifyUser(email: string): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/auth/force-verify`, { email });
+  resendVerification(email: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/auth/resend-verification`, { email });
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/auth/forgot-password`, { email });
   }
 
   logout(): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/auth/logout`, {})
-      .pipe(
-        tap(() => {
-          if (isPlatformBrowser(this.platformId)) {
-            localStorage.removeItem('token');
-          }
-          this.currentUserSubject.next(null);
-        })
-      );
+    return this.http.post<any>(`${this.baseUrl}/auth/logout`, {}).pipe(
+      tap(() => {
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.removeItem('token');
+        }
+        this.currentUserSubject.next(null);
+      }),
+      catchError(() => {
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.removeItem('token');
+        }
+        this.currentUserSubject.next(null);
+        return of({ success: true });
+      })
+    );
   }
 
-
-  getCars(): Observable<{success: boolean, cars: Car[]}> {
-    const options = isPlatformBrowser(this.platformId) ? { withCredentials: true } : {};
-    return this.http.get<{success: boolean, cars: Car[]}>(`${this.baseUrl}/cars`, options);
+  getCars(params?: Record<string, string>): Observable<{ success: boolean; cars: Car[] }> {
+    const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
+    return this.http.get<{ success: boolean; cars: Car[] }>(`${this.baseUrl}/cars${queryString}`);
   }
 
-  
-  getRentals(): Observable<{success: boolean, rentals: Rental[]}> {
+  getRentals(): Observable<{ success: boolean; rentals: Rental[] }> {
     if (!isPlatformBrowser(this.platformId)) {
-      return new Observable(observer => {
-        observer.next({ success: true, rentals: [] });
-        observer.complete();
-      });
+      return of({ success: true, rentals: [] });
     }
-    
-    const token = localStorage.getItem('token');
-    const headers: any = {};
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    return this.http.get<{success: boolean, rentals: Rental[]}>(`${this.baseUrl}/rentals`, {
-      headers,
-      withCredentials: true
-    });
+    return this.http.get<{ success: boolean; rentals: Rental[] }>(`${this.baseUrl}/rentals`);
   }
 
   createRental(rentalData: any): Observable<any> {
     if (!isPlatformBrowser(this.platformId)) {
-      return new Observable(observer => {
-        observer.next({ success: false, message: 'Not in browser' });
-        observer.complete();
-      });
+      return of({ success: false, message: 'Not in browser' });
     }
-    
-    const token = localStorage.getItem('token');
-    const headers: any = {};
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    return this.http.post<any>(`${this.baseUrl}/rentals`, rentalData, {
-      headers,
-      withCredentials: true
-    });
+    return this.http.post<any>(`${this.baseUrl}/rentals`, rentalData);
   }
 
   sendContactMessage(message: ContactMessage): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/contact`, message);
   }
 
- 
   get(url: string): Observable<any> {
-    return this.http.get<any>(`http://localhost:5000${url}`, { withCredentials: true });
+    return this.http.get<any>(`${this.baseUrl}${url}`);
   }
 
   post(url: string, data: any): Observable<any> {
-    return this.http.post<any>(`http://localhost:5000${url}`, data, { withCredentials: true });
+    return this.http.post<any>(`${this.baseUrl}${url}`, data);
   }
 
   put(url: string, data: any): Observable<any> {
-    return this.http.put<any>(`http://localhost:5000${url}`, data, { withCredentials: true });
+    return this.http.put<any>(`${this.baseUrl}${url}`, data);
   }
 
   delete(url: string): Observable<any> {
-    return this.http.delete<any>(`http://localhost:5000${url}`, { withCredentials: true });
+    return this.http.delete<any>(`${this.baseUrl}${url}`);
   }
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.currentUserSubject.value;
   }
 }

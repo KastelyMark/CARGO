@@ -1,6 +1,7 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { ApiService, User, Car, Rental } from '../../services/api.service';
 import { RentalModalComponent } from '../rental-modal/rental-modal.component';
 
@@ -18,8 +19,9 @@ interface DashboardStats {
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
+  private subs: Subscription[] = [];
   stats: DashboardStats = {
     totalCars: 0,
     availableCars: 0,
@@ -43,37 +45,32 @@ export class DashboardComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-  ngOnInit() {
-    this.apiService.currentUser$.subscribe(user => {
+  ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const userSub = this.apiService.currentUser$.subscribe(user => {
       this.currentUser = user;
-      
-      if (!user && isPlatformBrowser(this.platformId)) {
+      if (!user) {
         this.router.navigate(['/login']);
-      } else if (user && isPlatformBrowser(this.platformId)) {
-        this.loadDashboardData();
-        
-        this.route.queryParams.subscribe(params => {
-          if (params['carId']) {
-            this.preselectedCarId = parseInt(params['carId']);
-            this.preselectedCarName = params['carName'];
-            this.preselectedCarPrice = parseFloat(params['carPrice']);
-            setTimeout(() => {
-              this.openRentalModal();
-            }, 500);
-          }
-        });
+        return;
+      }
+      this.loadDashboardData();
+    });
+    this.subs.push(userSub);
+
+    const paramSub = this.route.queryParams.subscribe(params => {
+      if (params['carId']) {
+        this.preselectedCarId = parseInt(params['carId']);
+        this.preselectedCarName = params['carName'];
+        this.preselectedCarPrice = parseFloat(params['carPrice']);
+        setTimeout(() => this.openRentalModal(), 500);
       }
     });
-    
-    if (isPlatformBrowser(this.platformId)) {
-      const currentUser = this.apiService.getCurrentUser();
-      
-      if (currentUser) {
-        setTimeout(() => {
-          this.loadDashboardData();
-        }, 100);
-      }
-    }
+    this.subs.push(paramSub);
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
   }
 
   openRentalModal() {
@@ -98,8 +95,8 @@ export class DashboardComponent implements OnInit {
     
     try {
       this.isLoading = true;
-      
-      const carsResponse = await this.apiService.getCars().toPromise();
+
+      const carsResponse = await firstValueFrom(this.apiService.getCars());
       if (carsResponse?.success) {
         const cars = carsResponse.cars;
         this.stats.totalCars = cars.length;
@@ -108,10 +105,10 @@ export class DashboardComponent implements OnInit {
       }
 
       try {
-        const rentalsResponse = await this.apiService.getRentals().toPromise();
+        const rentalsResponse = await firstValueFrom(this.apiService.getRentals());
         if (rentalsResponse?.success) {
           this.recentRentals = rentalsResponse.rentals.slice(0, 5);
-          this.stats.activeRentals = rentalsResponse.rentals.filter(rental => 
+          this.stats.activeRentals = rentalsResponse.rentals.filter(rental =>
             rental.status === 'active' || rental.status === 'confirmed'
           ).length;
         }
@@ -121,7 +118,7 @@ export class DashboardComponent implements OnInit {
 
       if (this.currentUser?.role === 'admin') {
         try {
-          const adminStats = await this.apiService.get('/api/admin/stats').toPromise();
+          const adminStats = await firstValueFrom(this.apiService.get('/admin/stats'));
           if (adminStats?.success) {
             this.stats = { ...this.stats, ...adminStats.stats };
           }

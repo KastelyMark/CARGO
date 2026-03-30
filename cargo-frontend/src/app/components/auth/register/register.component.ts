@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+﻿import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../services/api.service';
 
 interface CountryCode {
@@ -17,7 +19,7 @@ interface CountryCode {
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnDestroy {
   userData = {
     name: '',
     email: '',
@@ -26,7 +28,7 @@ export class RegisterComponent {
     password: '',
     confirmPassword: ''
   };
-  
+
   countryCodes: CountryCode[] = [
     { code: '+36', name: 'Magyarország', flag: '🇭🇺' },
     { code: '+43', name: 'Ausztria', flag: '🇦🇹' },
@@ -43,23 +45,26 @@ export class RegisterComponent {
     { code: '+386', name: 'Szlovénia', flag: '🇸🇮' },
     { code: '+48', name: 'Lengyelország', flag: '🇵🇱' }
   ];
-  
+
   isSubmitting = false;
   showMessage = false;
   messageText = '';
   messageType = '';
   showCountryDropdown = false;
 
-  constructor(
-    private apiService: ApiService,
-    private router: Router
-  ) {}
+  private sub?: Subscription;
 
-  toggleCountryDropdown() {
+  constructor(private apiService: ApiService, private router: Router) {}
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  toggleCountryDropdown(): void {
     this.showCountryDropdown = !this.showCountryDropdown;
   }
 
-  selectCountryCode(countryCode: CountryCode) {
+  selectCountryCode(countryCode: CountryCode): void {
     this.userData.countryCode = countryCode.code;
     this.showCountryDropdown = false;
   }
@@ -69,13 +74,12 @@ export class RegisterComponent {
   }
 
   validatePhone(): boolean {
-    const phoneRegex = /^[0-9]{8,15}$/;
-    return phoneRegex.test(this.userData.phone);
+    return /^[0-9]{8,15}$/.test(this.userData.phone);
   }
 
-  async onSubmit() {
+  onSubmit(): void {
     if (this.isSubmitting) return;
-    
+
     if (this.userData.password !== this.userData.confirmPassword) {
       this.showErrorMessage('A jelszavak nem egyeznek meg.');
       return;
@@ -85,49 +89,42 @@ export class RegisterComponent {
       this.showErrorMessage('Kérjük, adjon meg egy érvényes telefonszámot (8-15 számjegy).');
       return;
     }
-    
-    this.isSubmitting = true;
-    
-    try {
-      // Combine country code with phone number
-      const registrationData = {
-        ...this.userData,
-        phone: this.userData.countryCode + this.userData.phone
-      };
 
-      const response = await this.apiService.register(registrationData).toPromise();
-      
-      if (response.success) {
-        // Beállítjuk a pending verification flag-et
-        localStorage.setItem('pendingVerification', 'true');
-        localStorage.setItem('verificationEmail', this.userData.email);
-        
-        this.showSuccessMessage('Sikeres regisztráció! Ellenőrizd az email címed a hitelesítéshez.');
-        setTimeout(() => {
-          this.router.navigate(['/verify']);
-        }, 2000);
-      } else {
-        this.showErrorMessage(response.message || 'Hiba történt a regisztráció során.');
+    this.isSubmitting = true;
+
+    const registrationData = {
+      ...this.userData,
+      phone: this.userData.countryCode + this.userData.phone
+    };
+
+    this.sub = this.apiService.register(registrationData).subscribe({
+      next: (response) => {
+        this.isSubmitting = false;
+        if (response?.success) {
+          localStorage.setItem('pendingVerification', 'true');
+          localStorage.setItem('verificationEmail', this.userData.email);
+          this.showSuccessMessage('Sikeres regisztráció! Ellenőrizd az email címed a hitelesítéshez.');
+          setTimeout(() => this.router.navigate(['/verify']), 2000);
+        } else {
+          this.showErrorMessage(response?.message || 'Hiba történt a regisztráció során.');
+        }
+      },
+      error: (error: any) => {
+        this.isSubmitting = false;
+        this.showErrorMessage(error.error?.message || 'Hiba történt a regisztráció során.');
       }
-    } catch (error: any) {
-      console.error('Register error:', error);
-      this.showErrorMessage(error.error?.message || 'Hiba történt a regisztráció során.');
-    } finally {
-      this.isSubmitting = false;
-    }
+    });
   }
 
-  private showSuccessMessage(message: string) {
+  private showSuccessMessage(message: string): void {
     this.messageText = message;
     this.messageType = 'success';
     this.showMessage = true;
-    setTimeout(() => this.showMessage = false, 5000);
   }
 
-  private showErrorMessage(message: string) {
+  private showErrorMessage(message: string): void {
     this.messageText = message;
     this.messageType = 'error';
     this.showMessage = true;
-    setTimeout(() => this.showMessage = false, 5000);
   }
 }

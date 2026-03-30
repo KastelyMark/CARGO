@@ -31,7 +31,7 @@ router.get('/cars', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'cars.html'));
 });
 
-// Catch-all route for SPA
+
 router.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
