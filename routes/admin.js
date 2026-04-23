@@ -331,7 +331,7 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
         const params = [];
 
         if (req.body.password && req.body.password.trim() !== '') {
-            const hashedPassword = await bcrypt.hash(req.body.password, 12);
+            const hashedPassword = await bcrypt.hash(req.body.password, 10);
             fields.push('password = ?');
             params.push(hashedPassword);
         }

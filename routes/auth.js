@@ -34,7 +34,7 @@ router.post('/register', [
         if (existingUsers.length > 0) {
             return res.status(400).json({ success: false, message: 'Ez az email cím már regisztrálva van' });
         }
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const hashedPassword = await bcrypt.hash(password, 10);
         const verificationCode = generateVerificationCode();
         await getPool().execute(
             'INSERT INTO users (name, email, phone, password, verification_code, is_verified, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())',
@@ -200,7 +200,7 @@ router.post('/forgot-password', [
         const tempPassword = Math.random().toString(36).slice(-4).toUpperCase() +
                              Math.random().toString(36).slice(-4) +
                              Math.floor(10 + Math.random() * 90);
-        const hashedTemp = await bcrypt.hash(tempPassword, 12);
+        const hashedTemp = await bcrypt.hash(tempPassword, 10);
         await getPool().execute('UPDATE users SET password = ?, temp_password = 1 WHERE id = ?', [hashedTemp, user.id]);
         await sendTemporaryPasswordEmail(email, user.name, tempPassword);
         res.json({ success: true, message: 'Az ideiglenes jelszót elküldtük az email címre.' });
@@ -230,7 +230,7 @@ router.post('/reset-password', [
         if (!isValidTemp) {
             return res.status(400).json({ success: false, message: 'Érvénytelen ideiglenes jelszó' });
         }
-        const hashedNew = await bcrypt.hash(new_password, 12);
+        const hashedNew = await bcrypt.hash(new_password, 10);
         await getPool().execute('UPDATE users SET password = ?, temp_password = 0 WHERE id = ?', [hashedNew, user.id]);
         res.json({ success: true, message: 'Jelszó sikeresen frissítve!' });
     } catch (error) {

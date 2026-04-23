@@ -130,10 +130,11 @@
             class="form-control" 
             [(ngModel)]="userData.password" 
             required
-            minlength="6"
-            placeholder="Minimum 6 karakter"
+            minlength="8"
+            placeholder="Min. 8 kar., nagybetű, szám, speciális karakter"
             autocomplete="new-password"
           >
+          <small class="form-hint">Minimum 8 karakter, tartalmazzon nagybetűt, számot és speciális karaktert (pl. !&#64;#)</small>
         </div>
 
         <!-- Confirm Password Field -->
